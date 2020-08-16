@@ -1,2 +1,5 @@
-# Vim
+# vim
 *.sw*
+
+# env
+
