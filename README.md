@@ -9,7 +9,7 @@ Install the the Pip environment using the following command.
 $ pipenv install
 ```
 
-Open `app.config.py` and fill in the `SQLALCHEMY_DATABASE_URI`.
+Open `app/config.py` and fill in the `SQLALCHEMY_DATABASE_URI`.
 
 Open a PSQL shell by running `psql`
 
