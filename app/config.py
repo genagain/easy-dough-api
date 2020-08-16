@@ -1,5 +1,6 @@
+import os
+
 class Configuration():
-    SECRET_KEY = 'you super secret key'
-    # TODO Fill in DB URI
-    SQLALCHEMY_DATABASE_URI = 'postgresql://your_db_user:your_db_password@localhost/your_db_name'
+    SECRET_KEY = os.environ['SECRET_KEY']
+    SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
