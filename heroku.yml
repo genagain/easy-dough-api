@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
   config:
-    SECRET_KEY=QRWmzmWNRsLUlp0zRpSXBOPJr0SSMiSwJgw8bgQdJm0
+    SECRET_KEY: QRWmzmWNRsLUlp0zRpSXBOPJr0SSMiSwJgw8bgQdJm0
