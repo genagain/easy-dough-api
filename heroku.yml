@@ -3,3 +3,7 @@ build:
     web: Dockerfile
   config:
     SECRET_KEY: QRWmzmWNRsLUlp0zRpSXBOPJr0SSMiSwJgw8bgQdJm0
+release:
+  command:
+    - flask db upgrade
+  image: web
