@@ -1,5 +1,7 @@
 FROM python:3.8.2-alpine
 
+ARG SECRET_KEY
+
 RUN apk update \
   && apk add --virtual build-deps gcc python3-dev musl-dev \
   && apk add postgresql-dev \
