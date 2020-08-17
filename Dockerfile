@@ -1,7 +1,6 @@
 FROM python:3.8.2-alpine
 
 ARG SECRET_KEY
-ARG DATABASE_URL
 ENV SECRET_KEY=$SECRET_KEY
 
 RUN apk update \
