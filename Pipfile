@@ -19,6 +19,7 @@ sqlalchemy = "*"
 wtforms = "*"
 flask-wtf = "*"
 gunicorn = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.8"
