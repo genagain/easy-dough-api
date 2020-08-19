@@ -7,15 +7,13 @@ from flask_bcrypt import Bcrypt
 
 from .routes import auth, dashboard
 
-app = Flask(__name__)
-app.config.from_object(Configuration)
-app.register_blueprint(auth.bp)
-app.register_blueprint(dashboard.bp)
-jwt = JWTManager(app)
-Bcrypt().init_app(app)
-db.init_app(app)
-migrate = Migrate(app, db)
-
-@app.route('/')
-def main_page():
-    return {'some': 'json'}
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Configuration)
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(dashboard.bp)
+    jwt = JWTManager(app)
+    Bcrypt().init_app(app)
+    db.init_app(app)
+    migrate = Migrate(app, db)
+    return app

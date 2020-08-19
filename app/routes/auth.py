@@ -13,6 +13,7 @@ def login_access_token():
     password = body['password']
 
     # pw_hash = generate_password_hash('password')
+    # TODO add check_password method to User model
     pw_hash = b'$2b$12$nbcxvcyEYBLJoB0FgaBt3ee.pleTJNBJ5vkpccKNhq7fflzkiVyCq'
     if email != 'test@test.com' and check_password_hash(pw_hash, 'password'):
         return { "message": "Bad username or password" }, 401
