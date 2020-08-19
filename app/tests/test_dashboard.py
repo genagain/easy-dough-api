@@ -3,7 +3,7 @@ import pytest
 from app import create_app
 from .utils import client
 
-def test_root(client):
+def test_unauthorized_dashboard(client):
     response = client.get('/dashboard')
-    assert b'msg' in response.data
-    assert b'Missing Authorization Header' in response.data
+    json_response = response.get_json()
+    assert json_response['msg'] == 'Missing Authorization Header'
