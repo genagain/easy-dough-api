@@ -5,7 +5,7 @@ from flask_jwt_extended import decode_token
 
 from .utils import client
 
-def test_root(client):
+def test_login(client):
     response = client.post('/auth/login', json={
         'email': 'test@test.com',
         'password': 'password'
