@@ -3,13 +3,7 @@ import pytest
 from app import create_app
 from flask_jwt_extended import decode_token
 
-## TODO put this in test utils
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-      yield client
+from .utils import client
 
 def test_root(client):
     response = client.post('/auth/login', json={
