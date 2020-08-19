@@ -6,7 +6,7 @@ ENV SECRET_KEY=$SECRET_KEY
 RUN apk update \
   && apk add --virtual build-deps gcc python3-dev musl-dev \
   && apk add postgresql-dev \
-  && apd add libffi-dev \
+  && apk add libffi-dev \
   && apk add bash
 
 RUN pip install psycopg2-binary
