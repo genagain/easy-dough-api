@@ -9,7 +9,6 @@ RUN apk update \
   && apk add bash
 
 RUN pip install psycopg2-binary
-RUN apk del build-deps
 
 RUN pip install pipenv
 
@@ -17,5 +16,6 @@ COPY . ./
 
 RUN pipenv lock --requirements > requirements.txt
 RUN pip install -r requirements.txt
+RUN apk del build-deps
 
 CMD ["gunicorn", "app:app"]
