@@ -21,4 +21,4 @@ COPY . ./
 RUN pipenv lock --requirements > requirements.txt
 RUN pip install -r requirements.txt
 
-CMD ["gunicorn", "app:app"]
+CMD ["gunicorn", "flask_app:app"]
