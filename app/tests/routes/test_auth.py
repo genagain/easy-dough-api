@@ -1,6 +1,5 @@
 import pytest
 
-from app import create_app
 from flask_jwt_extended import decode_token
 
 from .utils import client

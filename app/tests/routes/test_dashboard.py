@@ -1,6 +1,5 @@
 import pytest
 
-from app import create_app
 from .utils import client
 
 def test_unauthorized_dashboard(client):
