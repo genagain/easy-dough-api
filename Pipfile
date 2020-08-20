@@ -21,6 +21,7 @@ flask-wtf = "*"
 gunicorn = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
+pytest-dotenv = "*"
 
 [requires]
 python_version = "3.8"
