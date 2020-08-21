@@ -22,6 +22,7 @@ gunicorn = "*"
 flask-jwt-extended = "*"
 flask-bcrypt = "*"
 pytest-dotenv = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.8"
