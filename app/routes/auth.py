@@ -16,7 +16,7 @@ def login_access_token():
     # TODO add check_password method to User model
     pw_hash = b'$2b$12$nbcxvcyEYBLJoB0FgaBt3ee.pleTJNBJ5vkpccKNhq7fflzkiVyCq'
     if email != 'test@test.com' or not check_password_hash(pw_hash, password):
-        return { "message": "Bad username or password" }, 401
+        return { "message": "Bad email or password" }, 401
 
     access_token = create_access_token(identity=email)
     return {'access_token': access_token}, 200
