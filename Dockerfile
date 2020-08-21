@@ -12,7 +12,7 @@ RUN apk update \
 RUN apk add py2-pip autoconf automake g++ make --no-cache
 RUN apk add libffi-dev
 
-RUN pip install py-bcrypt
+RUN pip install bcrypt
 RUN pip install psycopg2-binary
 RUN apk del build-deps
 
