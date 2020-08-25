@@ -14,6 +14,7 @@ def test_valid_login(client):
     access_token = json_response['access_token']
     decoded_token = decode_token(access_token)
     assert decoded_token['identity'] == 'test@test.com'
+    assert response.status_code == 200
 
 def test_invalid_login(client):
     response = client.post('/auth/login', json={
@@ -23,6 +24,7 @@ def test_invalid_login(client):
     json_response = response.get_json()
     message = json_response['message']
     assert message == "Bad email or password"
+    assert response.status_code == 401
 
 def test_invalid_format(client):
     response = client.post('/auth/login', data={
@@ -32,6 +34,7 @@ def test_invalid_format(client):
     json_response = response.get_json()
     message = json_response['message']
     assert message == "Invalid format: body must be JSON"
+    assert response.status_code == 501
 
 def test_invalid_body(client):
     for attribute in ['email', 'password']:
@@ -40,3 +43,4 @@ def test_invalid_body(client):
         json_response = response.get_json()
         message = json_response['message']
         assert message == "Invalid body: body must contain email and password"
+        assert response.status_code == 501
