@@ -6,6 +6,10 @@ from flask_bcrypt import check_password_hash
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+@bp.route('/signup', methods=['POST'])
+def signup():
+    return { message: "Success!"}, 200
+
 @bp.route('/login', methods=['POST'])
 def login_access_token():
     if request.mimetype != 'application/json':

@@ -2,7 +2,19 @@ import pytest
 
 from flask_jwt_extended import decode_token
 
+from app import db
+from app.models.user import User
 from .utils import client
+
+def test_valid_signup(client):
+    user = User(
+            firstname='Test',
+            lastname='User',
+            email='test@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
 
 def test_valid_login(client):
     response = client.post('/auth/login', json={
