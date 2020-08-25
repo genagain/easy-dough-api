@@ -30,6 +30,7 @@ def test_valid_signup(client):
     json_response = response.get_json()
     message = json_response['message']
     assert message == "Successfully created a new user"
+    assert response.status_code == 200
 
     user =  User.query.filter_by(email='test@test.com').first()
     assert user is not None
@@ -37,6 +38,32 @@ def test_valid_signup(client):
     assert user.lastname == body['lastname']
     assert user.email == body['email']
     assert user.password == body['password']
+
+def test_duplicate_signup(client):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    body = {
+        'firstname': 'John',
+        'lastname' : 'Doe',
+        'email': 'john@test.com',
+        'password': 'password'
+        }
+
+    response = client.post('/auth/signup', json=body)
+    json_response = response.get_json()
+    message = json_response['message']
+    assert message == "A user with the email john@test.com already exists"
+    assert response.status_code == 501
+
+
+
 
 def test_valid_login(client):
     response = client.post('/auth/login', json={

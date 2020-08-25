@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token
 
 # from flask_bcrypt import generate_password_hash
 from flask_bcrypt import check_password_hash
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.models.user import User
@@ -11,15 +12,19 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/signup', methods=['POST'])
 def signup():
-    body = request.json
-    user = User(
-            firstname=body['firstname'],
-            lastname=body['lastname'],
-            email=body['email'],
-            password=body['password']
-            )
-    db.session.add(user)
-    db.session.commit()
+    try:
+        body = request.json
+        user = User(
+                firstname=body['firstname'],
+                lastname=body['lastname'],
+                email=body['email'],
+                password=body['password']
+                )
+        db.session.add(user)
+        db.session.commit()
+    except IntegrityError:
+        return { 'message': f"A user with the email {body['email']} already exists" }, 501
+
     return { 'message': "Successfully created a new user"}, 200
 
 @bp.route('/login', methods=['POST'])
