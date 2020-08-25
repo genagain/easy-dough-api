@@ -4,6 +4,7 @@ from flask_jwt_extended import decode_token
 
 from .utils import client
 
+## TODO add status codes to all tests
 def test_valid_login(client):
     response = client.post('/auth/login', json={
         'email': 'test@test.com',
@@ -22,3 +23,20 @@ def test_invalid_login(client):
     json_response = response.get_json()
     message = json_response['message']
     assert message == "Bad email or password"
+
+def test_invalid_format(client):
+    response = client.post('/auth/login', data={
+        'email': 'test@test.com',
+        'password': 'password'
+        })
+    json_response = response.get_json()
+    message = json_response['message']
+    assert message == "Invalid format: body must be JSON"
+
+def test_invalid_body(client):
+    for attribute in ['email', 'password']:
+        invalid_body = { attribute: 'something' }
+        response = client.post('/auth/login', json=invalid_body)
+        json_response = response.get_json()
+        message = json_response['message']
+        assert message == "Invalid body: body must contain email and password"

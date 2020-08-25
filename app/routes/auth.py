@@ -8,7 +8,14 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/login', methods=['POST'])
 def login_access_token():
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
     body = request.json
+
+    if not (body.get('email') and body.get('password')):
+        return { "message": "Invalid body: body must contain email and password" }, 501
+
     email = body['email']
     password = body['password']
 
