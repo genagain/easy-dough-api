@@ -12,7 +12,6 @@ def login_access_token():
         return { "message": "Invalid format: body must be JSON" }, 501
 
     body = request.json
-
     if not (body.get('email') and body.get('password')):
         return { "message": "Invalid body: body must contain email and password" }, 501
 
