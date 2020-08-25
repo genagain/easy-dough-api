@@ -4,7 +4,6 @@ from flask_jwt_extended import decode_token
 
 from .utils import client
 
-## TODO add status codes to all tests
 def test_valid_login(client):
     response = client.post('/auth/login', json={
         'email': 'test@test.com',
