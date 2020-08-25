@@ -4,11 +4,23 @@ from flask_jwt_extended import create_access_token
 # from flask_bcrypt import generate_password_hash
 from flask_bcrypt import check_password_hash
 
+from app import db
+from app.models.user import User
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/signup', methods=['POST'])
 def signup():
-    return { message: "Success!"}, 200
+    body = request.json
+    user = User(
+            firstname=body['firstname'],
+            lastname=body['lastname'],
+            email=body['email'],
+            password=body['password']
+            )
+    db.session.add(user)
+    db.session.commit()
+    return { 'message': "Successfully created a new user"}, 200
 
 @bp.route('/login', methods=['POST'])
 def login_access_token():

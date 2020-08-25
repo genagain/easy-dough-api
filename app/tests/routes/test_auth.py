@@ -6,15 +6,37 @@ from app import db
 from app.models.user import User
 from .utils import client
 
+## TODO add a fixture to create this user before most of these tests
+    # user = User(
+            # firstname='Test',
+            # lastname='User',
+            # email='test@test.com',
+            # password='password'
+            # )
+    # db.session.add(user)
+    # db.session.commit()
+
 def test_valid_signup(client):
-    user = User(
-            firstname='Test',
-            lastname='User',
-            email='test@test.com',
-            password='password'
-            )
-    db.session.add(user)
-    db.session.commit()
+    no_user =  User.query.filter_by(email='test@test.com').first()
+    assert no_user is None
+
+    body = {
+        'firstname': 'Test',
+        'lastname' : 'User',
+        'email': 'test@test.com',
+        'password': 'password'
+        }
+    response = client.post('/auth/signup', json=body)
+    json_response = response.get_json()
+    message = json_response['message']
+    assert message == "Successfully created a new user"
+
+    user =  User.query.filter_by(email='test@test.com').first()
+    assert user is not None
+    assert user.firstname == body['firstname']
+    assert user.lastname == body['lastname']
+    assert user.email == body['email']
+    assert user.password == body['password']
 
 def test_valid_login(client):
     response = client.post('/auth/login', json={
