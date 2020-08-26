@@ -4,3 +4,5 @@
 # env
 *.env
 
+# pycache
+app/__pycache__/

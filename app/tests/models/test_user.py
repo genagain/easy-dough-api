@@ -8,16 +8,16 @@ from .utils import context
 
 def test_add_user(context):
     user = User(
-            firstname='Test',
-            lastname='User',
-            email='test@test.com',
+            firstname='Jesse',
+            lastname='Test',
+            email='jesse@test.com',
             password='password'
             )
     db.session.add(user)
     db.session.commit()
-    assert user.firstname == 'Test'
-    assert user.lastname == 'User'
-    assert user.email == 'test@test.com'
+    assert user.firstname == 'Jesse'
+    assert user.lastname == 'Test'
+    assert user.email == 'jesse@test.com'
     assert user.password == 'password'
 
 def test_unique_email(context):
