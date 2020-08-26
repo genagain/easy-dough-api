@@ -17,13 +17,13 @@ from .utils import client
     # db.session.commit()
 
 def test_valid_signup(client):
-    no_user =  User.query.filter_by(email='test@test.com').first()
+    no_user =  User.query.filter_by(email='jane@test.com').first()
     assert no_user is None
 
     body = {
-        'firstname': 'Test',
-        'lastname' : 'User',
-        'email': 'test@test.com',
+        'firstname': 'Jane',
+        'lastname' : 'Test',
+        'email': 'jane@test.com',
         'password': 'password'
         }
     response = client.post('/auth/signup', json=body)
@@ -32,7 +32,7 @@ def test_valid_signup(client):
     assert message == "Successfully created a new user"
     assert response.status_code == 200
 
-    user =  User.query.filter_by(email='test@test.com').first()
+    user =  User.query.filter_by(email='jane@test.com').first()
     assert user is not None
     assert user.firstname == body['firstname']
     assert user.lastname == body['lastname']
