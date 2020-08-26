@@ -47,10 +47,6 @@ def login_access_token():
     email = body['email']
     password = body['password']
 
-    # pw_hash = generate_password_hash('password')
-    # TODO add check_password method to User model
-
-    # pw_hash = b'$2b$12$nbcxvcyEYBLJoB0FgaBt3ee.pleTJNBJ5vkpccKNhq7fflzkiVyCq'
     user = User.query.filter_by(email=email).first()
     if not user or not check_password_hash(user.password, password):
         return { "message": "Bad email or password" }, 401
