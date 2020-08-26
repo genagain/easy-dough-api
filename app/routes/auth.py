@@ -12,8 +12,15 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/signup', methods=['POST'])
 def signup():
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
+    body = request.json
+
+    required_fields =  ['firstname', 'lastname', 'email', 'password']
+    if not set(body.keys()) == set(required_fields):
+        return { "message": "Invalid body: body must contain firstname, lastname, email and password" }, 501
     try:
-        body = request.json
         user = User(
                 firstname=body['firstname'],
                 lastname=body['lastname'],

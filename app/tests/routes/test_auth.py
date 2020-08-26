@@ -63,7 +63,34 @@ def test_duplicate_signup(client):
     assert message == "A user with the email jerry@test.com already exists"
     assert response.status_code == 501
 
-## TODO add format and body tests to signup
+def test_invalid_format_signup(client):
+    body = {
+        'firstname': 'Jonah',
+        'lastname' : 'Test',
+        'email': 'Jonah@test.com',
+        'password': 'password'
+        }
+    response = client.post('/auth/signup', data=body)
+    json_response = response.get_json()
+    message = json_response['message']
+    assert message == "Invalid format: body must be JSON"
+    assert response.status_code == 501
+
+
+def test_invalid_body_signup(client):
+    for attribute in ['firstname', 'lastname', 'email', 'password']:
+        invalid_body = {
+            'firstname': 'Jonah',
+            'lastname' : 'Test',
+            'email': 'Jonah@test.com',
+            'password': 'password'
+        }
+        invalid_body.pop(attribute)
+        response = client.post('/auth/signup', json=invalid_body)
+        json_response = response.get_json()
+        message = json_response['message']
+        assert message == "Invalid body: body must contain firstname, lastname, email and password"
+        assert response.status_code == 501
 
 def test_valid_login(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
@@ -106,7 +133,7 @@ def test_invalid_login(client):
     assert message == "Bad email or password"
     assert response.status_code == 401
 
-def test_invalid_format(client):
+def test_invalid_format_login(client):
     response = client.post('/auth/login', data={
         'email': 'test@test.com',
         'password': 'password'
@@ -116,7 +143,7 @@ def test_invalid_format(client):
     assert message == "Invalid format: body must be JSON"
     assert response.status_code == 501
 
-def test_invalid_body(client):
+def test_invalid_body_login(client):
     for attribute in ['email', 'password']:
         invalid_body = { attribute: 'something' }
         response = client.post('/auth/login', json=invalid_body)
