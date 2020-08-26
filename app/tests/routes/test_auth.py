@@ -67,7 +67,6 @@ def test_duplicate_signup(client):
 
 def test_valid_login(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
-    import pdb; pdb.set_trace()
     user = User(
             firstname='James',
             lastname='Test',
@@ -88,8 +87,18 @@ def test_valid_login(client):
     assert response.status_code == 200
 
 def test_invalid_login(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='Jacki',
+            lastname='Test',
+            email='jacki@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
     response = client.post('/auth/login', json={
-        'email': 'test@test.com',
+        'email': 'jacki@test.com',
         'password': 'bad password'
         })
     json_response = response.get_json()
