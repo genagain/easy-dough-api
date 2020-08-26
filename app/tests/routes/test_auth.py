@@ -1,6 +1,6 @@
 import pytest
 
-from flask_bcrypt import generate_password_hash
+from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_jwt_extended import decode_token
 
 from app import db
@@ -38,7 +38,7 @@ def test_valid_signup(client):
     assert user.firstname == body['firstname']
     assert user.lastname == body['lastname']
     assert user.email == body['email']
-    assert user.password == body['password']
+    assert check_password_hash(user.password, body['password'])
 
 def test_duplicate_signup(client):
     user = User(

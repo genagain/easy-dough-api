@@ -1,8 +1,7 @@
 from flask import Blueprint, request
 from flask_jwt_extended import create_access_token
 
-# from flask_bcrypt import generate_password_hash
-from flask_bcrypt import check_password_hash
+from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 
 from app import db
@@ -21,11 +20,12 @@ def signup():
     if not set(body.keys()) == set(required_fields):
         return { "message": "Invalid body: body must contain firstname, lastname, email and password" }, 501
     try:
+        hashed_password = generate_password_hash(body['password']).decode('utf-8')
         user = User(
                 firstname=body['firstname'],
                 lastname=body['lastname'],
                 email=body['email'],
-                password=body['password']
+                password=hashed_password
                 )
         db.session.add(user)
         db.session.commit()
