@@ -23,6 +23,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
     except IntegrityError:
+        db.session.rollback()
         return { 'message': f"A user with the email {body['email']} already exists" }, 501
 
     return { 'message': "Successfully created a new user"}, 200
@@ -41,8 +42,10 @@ def login_access_token():
 
     # pw_hash = generate_password_hash('password')
     # TODO add check_password method to User model
-    pw_hash = b'$2b$12$nbcxvcyEYBLJoB0FgaBt3ee.pleTJNBJ5vkpccKNhq7fflzkiVyCq'
-    if email != 'test@test.com' or not check_password_hash(pw_hash, password):
+
+    # pw_hash = b'$2b$12$nbcxvcyEYBLJoB0FgaBt3ee.pleTJNBJ5vkpccKNhq7fflzkiVyCq'
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
         return { "message": "Bad email or password" }, 401
 
     access_token = create_access_token(identity=email)

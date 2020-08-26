@@ -1,5 +1,6 @@
 import pytest
 
+from flask_bcrypt import generate_password_hash
 from flask_jwt_extended import decode_token
 
 from app import db
@@ -41,39 +42,49 @@ def test_valid_signup(client):
 
 def test_duplicate_signup(client):
     user = User(
-            firstname='John',
+            firstname='Jerry',
             lastname='Test',
-            email='john@test.com',
+            email='jerry@test.com',
             password='password'
             )
     db.session.add(user)
     db.session.commit()
 
     body = {
-        'firstname': 'John',
+        'firstname': 'Jerry',
         'lastname' : 'Doe',
-        'email': 'john@test.com',
+        'email': 'jerry@test.com',
         'password': 'password'
         }
 
     response = client.post('/auth/signup', json=body)
     json_response = response.get_json()
     message = json_response['message']
-    assert message == "A user with the email john@test.com already exists"
+    assert message == "A user with the email jerry@test.com already exists"
     assert response.status_code == 501
 
-
-
+## TODO add format and body tests to signup
 
 def test_valid_login(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    import pdb; pdb.set_trace()
+    user = User(
+            firstname='James',
+            lastname='Test',
+            email='james@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
     response = client.post('/auth/login', json={
-        'email': 'test@test.com',
+        'email': 'james@test.com',
         'password': 'password'
         })
     json_response = response.get_json()
     access_token = json_response['access_token']
     decoded_token = decode_token(access_token)
-    assert decoded_token['identity'] == 'test@test.com'
+    assert decoded_token['identity'] == 'james@test.com'
     assert response.status_code == 200
 
 def test_invalid_login(client):
