@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, render_template
 from .config import Configuration
 from flask_migrate import Migrate
@@ -5,13 +7,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from apscheduler.schedulers.background import BackgroundScheduler
 
+def tick():
+    print('Tick! The time is: %s' % datetime.now())
 
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 bcrypt = Bcrypt()
-
+scheduler = BackgroundScheduler()
+scheduler.add_job(tick, 'interval', seconds=10)
+scheduler.start()
 
 def create_app():
     app = Flask(__name__)
