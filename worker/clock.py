@@ -6,4 +6,5 @@ sched = BlockingScheduler()
 def timed_job():
     print('This job is run every three minutes.')
 
+print('does this print')
 sched.start()
