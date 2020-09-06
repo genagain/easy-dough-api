@@ -22,7 +22,7 @@ def tick():
     user = User(
             firstname='Random',
             lastname='Test',
-            email=f"{result_str@test.com",
+            email=f"{result_str}@test.com",
             password=hashed_password
             )
     db.session.add(user)
