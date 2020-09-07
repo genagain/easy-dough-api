@@ -9,16 +9,17 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 
-def tick():
-    print('Tick! The time is: %s' % datetime.now())
-
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 bcrypt = Bcrypt()
 scheduler = BackgroundScheduler()
-scheduler.add_job(tick, 'interval', seconds=10)
-scheduler.start()
+
+# def tick():
+    # with db.app.app_context():
+        # print(User.query.all())
+    # print('Tick! The time is: %s' % datetime.now())
+
 
 def create_app():
     app = Flask(__name__)
