@@ -3,6 +3,7 @@ from datetime import datetime
 from app import create_app, scheduler
 from app.models.user import User
 
+
 app = create_app()
 
 def tick():
