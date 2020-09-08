@@ -23,6 +23,7 @@ flask-jwt-extended = "*"
 flask-bcrypt = "*"
 pytest-dotenv = "*"
 flask-cors = "*"
+apscheduler = "*"
 
 [requires]
 python_version = "3.8"
