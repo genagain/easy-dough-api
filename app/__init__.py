@@ -15,12 +15,6 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 scheduler = BackgroundScheduler()
 
-# def tick():
-    # with db.app.app_context():
-        # print(User.query.all())
-    # print('Tick! The time is: %s' % datetime.now())
-
-
 def create_app():
     app = Flask(__name__)
     CORS(app)
