@@ -10,7 +10,7 @@ from app.models.user import User
 
 app = create_app()
 
-def tick():
+def add_user():
     print('Tick! The time is: %s' % datetime.now())
     with app.app_context():
         hashed_password = generate_password_hash('test_password').decode('utf-8')
@@ -25,5 +25,5 @@ def tick():
         db.session.add(user)
         db.session.commit()
 
-scheduler.add_job(tick, 'interval', minutes=5)
+scheduler.add_job(add_user, 'cron', hour=1)
 scheduler.start()
