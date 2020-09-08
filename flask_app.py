@@ -25,5 +25,5 @@ def add_user():
         db.session.add(user)
         db.session.commit()
 
-scheduler.add_job(add_user, 'cron', hour=1)
+scheduler.add_job(add_user, 'cron', hour=1, minute=15)
 scheduler.start()
