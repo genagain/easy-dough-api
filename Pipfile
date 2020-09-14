@@ -24,6 +24,7 @@ flask-bcrypt = "*"
 pytest-dotenv = "*"
 flask-cors = "*"
 apscheduler = "*"
+plaid-python = "*"
 
 [requires]
 python_version = "3.8"
