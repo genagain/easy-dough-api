@@ -1,8 +1,9 @@
+from datetime import date
 import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app import create_app, db
-from app.models import User
+from app.models import User, Transaction
 
 @pytest.fixture
 def context():
@@ -14,7 +15,7 @@ def context():
         yield context
 
 
-def test_add_user(context):
+def test_create_user(context):
     user = User(
             firstname='Jesse',
             lastname='Test',
@@ -28,7 +29,7 @@ def test_add_user(context):
     assert user.email == 'jesse@test.com'
     assert user.password == 'password'
 
-def test_unique_email(context):
+def test_unique_email_constraint_user(context):
     user = User(
             firstname='Test',
             lastname='User',
@@ -47,3 +48,15 @@ def test_unique_email(context):
     db.session.add(user1)
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
+
+def test_create_transaction(context):
+    transaction = Transaction(
+            date='2020-09-14',
+            description='Lyft',
+            amount='750'
+            )
+    db.session.add(transaction)
+    db.session.commit()
+    assert transaction.date == date(2020, 9, 14)
+    assert transaction.description == 'Lyft'
+    assert transaction.amount == 750
