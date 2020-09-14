@@ -57,5 +57,5 @@ def print_transactions():
 
 
 # scheduler.add_job(add_user, 'cron', hour=1, minute=15)
-scheduler.add_job(print_transactions, 'interval', minutes=2)
+scheduler.add_job(print_transactions, 'cron', hour=1)
 scheduler.start()
