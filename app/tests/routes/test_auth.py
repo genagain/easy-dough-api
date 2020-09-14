@@ -4,7 +4,7 @@ from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_jwt_extended import decode_token
 
 from app import db
-from app.models.user import User
+from app.models import User
 from .utils import client
 
 ## TODO add a fixture to create this user before most of these tests

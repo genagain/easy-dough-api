@@ -2,7 +2,7 @@ import pytest
 
 from flask_bcrypt import generate_password_hash
 from app import db
-from app.models.user import User
+from app.models import User
 from .utils import client
 
 def test_unauthorized_dashboard(client):
