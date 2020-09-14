@@ -41,6 +41,7 @@ def print_transactions():
     transactions_response = client.Transactions.get(access_token, start_date, end_date)
     transactions_data = transactions_response['transactions']
     with app.app_context():
+        # TODO use a try catch block if there is a uniqueness constraint on this column
         for transaction_datum in transactions_data:
             date = transaction_datum['date']
             description = transaction_datum['name']

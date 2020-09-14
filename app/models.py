@@ -15,3 +15,5 @@ class Transaction(db.Model):
     date = db.Column(db.Date(), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer(), nullable=False)
+
+## TODO consider adding a uniqueness constraint on multiple columns to avoid dupliates
