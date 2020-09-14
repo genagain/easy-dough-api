@@ -1,10 +1,18 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from app import db
+from app import create_app, db
 from app.models import User
 
-from .utils import context
+@pytest.fixture
+def context():
+    app = create_app()
+    with app.app_context() as context:
+        db.session.remove()
+        db.drop_all()
+        db.create_all()
+        yield context
+
 
 def test_add_user(context):
     user = User(
