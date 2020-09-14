@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.models.user import User
+from app.models import User
 
 from .utils import context
 
