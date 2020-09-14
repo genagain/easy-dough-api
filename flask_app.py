@@ -7,7 +7,7 @@ from flask_bcrypt import generate_password_hash
 from plaid import Client
 
 from app import create_app, db, scheduler
-from app.models.user import User
+from app.models import User
 
 
 app = create_app()

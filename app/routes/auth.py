@@ -5,7 +5,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.models.user import User
+from app.models import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
