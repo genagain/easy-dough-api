@@ -55,7 +55,6 @@ def print_transactions():
             db.session.commit()
 
 
-
 scheduler.add_job(add_user, 'cron', hour=1)
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
