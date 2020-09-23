@@ -18,6 +18,9 @@ def transactions():
     if not start_date:
         return { 'message': 'Start date query parameter not found. Please provide a start date' }, 200
 
+    if not end_date:
+        return { 'message': 'End date query parameter not found. Please provide an end date' }, 200
+
     transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).all()
 
     transactions_data = list(map(lambda t: t.to_dict(), transactions))

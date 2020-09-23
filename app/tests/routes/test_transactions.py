@@ -98,4 +98,36 @@ def test_transactions_no_start_date(client):
 
     assert 'Start date query parameter not found. Please provide a start date' == json_response['message']
 
+def test_transactions_no_end_date(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='Joy',
+            lastname='Test',
+            email='joy@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+
+    db.session.add(may_transaction)
+    db.session.add(june_transaction)
+    db.session.add(july_transaction)
+    db.session.commit()
+
+    login_response = client.post('/auth/login', json={
+        'email': 'joy@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    response = client.get('/transactions?start_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
+
+    assert 'End date query parameter not found. Please provide an end date' == json_response['message']
+
 
