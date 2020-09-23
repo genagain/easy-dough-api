@@ -16,4 +16,8 @@ class Transaction(db.Model):
     description = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer(), nullable=False)
 
+    def to_dict(self):
+        row = self.__dict__
+        return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': self.amount }
+
 ## TODO consider adding a uniqueness constraint on multiple columns to avoid dupliates
