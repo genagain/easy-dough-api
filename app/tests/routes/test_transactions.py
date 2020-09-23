@@ -131,8 +131,42 @@ def test_transactions_no_end_date(client):
     assert 'start_date and end_date query parameters not found. Please provide both a start date and end date' == json_response['message']
 
 
-# TODO test search term with results
-# def test_transactions_
+def test_transactions_search_term_found(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='Joseph',
+            lastname='Test',
+            email='joseph@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
+    june_not_found_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
+    june_found_transaction = Transaction(date='2020-06-21', description='Pizza Delivery', amount=2000)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+
+    db.session.add(may_transaction)
+    db.session.add(june_not_found_transaction)
+    db.session.add(june_found_transaction)
+    db.session.add(july_transaction)
+    db.session.commit()
+
+    login_response = client.post('/auth/login', json={
+        'email': 'joseph@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30&search_term=pizza+del', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
+
+    assert [{ 'date': '2020-06-21', 'description': 'Pizza Delivery', 'amount': 2000} ] == json_response['transactions']
+
+
+
 
 # TODO test search term with no results
 

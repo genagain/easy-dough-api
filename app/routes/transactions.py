@@ -18,7 +18,13 @@ def transactions():
     if not (start_date and end_date):
         return { 'message': 'start_date and end_date query parameters not found. Please provide both a start date and end date' }, 200
 
-    transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).all()
+    search_term = request.args.get('search_term')
+    if not search_term:
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).all()
+    else:
+        search_clause = f"%{search_term}%"
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).all()
+
 
     transactions_data = list(map(lambda t: t.to_dict(), transactions))
     return { 'transactions': transactions_data }, 200
