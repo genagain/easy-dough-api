@@ -32,6 +32,8 @@ def test_transactions_no_query_params(client):
     json_response = response.get_json()
     assert json_response["message"] == 'Query parameters not found. Please provide dates or a search term in the request'
 
+# TODO invalid query params
+
 def test_transactions_valid_date_range(client):
     ## TODO create add user class method
     hashed_password = generate_password_hash('password').decode('utf-8')
@@ -165,12 +167,35 @@ def test_transactions_search_term_found(client):
 
     assert [{ 'date': '2020-06-21', 'description': 'Pizza Delivery', 'amount': 2000} ] == json_response['transactions']
 
+def test_transactions_search_term_not_found(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='Jerome',
+            lastname='Test',
+            email='jerome@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
 
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
 
+    db.session.add(may_transaction)
+    db.session.add(june_transaction)
+    db.session.add(july_transaction)
+    db.session.commit()
 
-# TODO test search term with no results
+    login_response = client.post('/auth/login', json={
+        'email': 'jerome@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
 
+    response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30&search_term=japanese', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
 
-# TODO test date range and search term
+    assert 'No transactions were found that matched the provided search term or date range'== json_response['message']
 
-# TODO invalid query params

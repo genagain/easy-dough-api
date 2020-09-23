@@ -25,6 +25,8 @@ def transactions():
         search_clause = f"%{search_term}%"
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).all()
 
-
     transactions_data = list(map(lambda t: t.to_dict(), transactions))
-    return { 'transactions': transactions_data }, 200
+    if transactions_data == []:
+        return { 'message': 'No transactions were found that matched the provided search term or date range' }
+    else:
+        return { 'transactions': transactions_data }, 200
