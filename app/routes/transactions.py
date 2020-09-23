@@ -7,4 +7,4 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @jwt_required
 def transactions():
     current_user_email = get_jwt_identity()
-    return { 'logged_in_as': current_user_email }, 200
+    return { 'message': 'Query parameters not found. Please provide dates or a search term in the request' }, 200

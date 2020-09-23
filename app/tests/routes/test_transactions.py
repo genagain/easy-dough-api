@@ -10,7 +10,7 @@ def test_unauthorized_transactions(client):
     json_response = response.get_json()
     assert json_response['msg'] == 'Missing Authorization Header'
 
-def test_authorized_transactions(client):
+def test_transactions_no_query_params(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
     user = User(
             firstname='Jessica',
@@ -30,5 +30,5 @@ def test_authorized_transactions(client):
 
     response = client.get('/transactions', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
-    assert json_response["logged_in_as"] == 'jessica@test.com'
+    assert json_response["message"] == 'Query parameters not found. Please provide dates or a search term in the request'
 
