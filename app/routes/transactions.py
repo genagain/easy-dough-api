@@ -15,11 +15,8 @@ def transactions():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
-    if not start_date:
-        return { 'message': 'Start date query parameter not found. Please provide a start date' }, 200
-
-    if not end_date:
-        return { 'message': 'End date query parameter not found. Please provide an end date' }, 200
+    if not (start_date and end_date):
+        return { 'message': 'start_date and end_date query parameters not found. Please provide both a start date and end date' }, 200
 
     transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).all()
 

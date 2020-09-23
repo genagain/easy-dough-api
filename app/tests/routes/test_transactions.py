@@ -96,7 +96,7 @@ def test_transactions_no_start_date(client):
     response = client.get('/transactions?end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
 
-    assert 'Start date query parameter not found. Please provide a start date' == json_response['message']
+    assert 'start_date and end_date query parameters not found. Please provide both a start date and end date' == json_response['message']
 
 def test_transactions_no_end_date(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
@@ -128,6 +128,15 @@ def test_transactions_no_end_date(client):
     response = client.get('/transactions?start_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
 
-    assert 'End date query parameter not found. Please provide an end date' == json_response['message']
+    assert 'start_date and end_date query parameters not found. Please provide both a start date and end date' == json_response['message']
 
 
+# TODO test search term with results
+# def test_transactions_
+
+# TODO test search term with no results
+
+
+# TODO test date range and search term
+
+# TODO invalid query params
