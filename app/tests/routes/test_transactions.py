@@ -30,9 +30,30 @@ def test_transactions_no_query_params(client):
 
     response = client.get('/transactions', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
-    assert json_response["message"] == 'Query parameters not found. Please provide dates or a search term in the request'
+    assert json_response["message"] == 'Query parameters not found. Please provide both a start date and end date and optionally a search term in the request'
 
-# TODO invalid query params
+def test_transactions_invalid_query_params(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='Javier',
+            lastname='Test',
+            email='javier@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    login_response = client.post('/auth/login', json={
+        'email': 'javier@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    response = client.get('/transactions?something=invalid', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
+    assert json_response["message"] == 'Query parameters not found. Please provide both a start date and end date and optionally a search term in the request'
+
 
 def test_transactions_valid_date_range(client):
     ## TODO create add user class method

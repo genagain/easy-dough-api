@@ -9,8 +9,11 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @jwt_required
 def transactions():
     current_user_email = get_jwt_identity()
-    if request.args == {}:
-        return { 'message': 'Query parameters not found. Please provide dates or a search term in the request' }, 200
+    valid_query_parameters = ['start_date', 'end_date', 'search_term']
+    extra_query_parameters = set(request.args.keys()) - set(valid_query_parameters)
+
+    if request.args == {} or extra_query_parameters:
+        return { 'message': 'Query parameters not found. Please provide both a start date and end date and optionally a search term in the request' }, 200
 
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
