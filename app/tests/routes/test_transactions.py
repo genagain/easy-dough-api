@@ -157,9 +157,9 @@ def test_transactions_no_end_date(client):
 def test_transactions_search_term_found(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
     user = User(
-            firstname='Joseph',
-            lastname='Test',
-            email='joseph@test.com',
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
             password=hashed_password
             )
     db.session.add(user)
@@ -177,7 +177,7 @@ def test_transactions_search_term_found(client):
     db.session.commit()
 
     login_response = client.post('/auth/login', json={
-        'email': 'joseph@test.com',
+        'email': 'john@test.com',
         'password': 'password'
         })
     json_login_response = login_response.get_json()
@@ -191,9 +191,9 @@ def test_transactions_search_term_found(client):
 def test_transactions_search_term_not_found(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
     user = User(
-            firstname='Jerome',
-            lastname='Test',
-            email='jerome@test.com',
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
             password=hashed_password
             )
     db.session.add(user)
@@ -209,7 +209,7 @@ def test_transactions_search_term_not_found(client):
     db.session.commit()
 
     login_response = client.post('/auth/login', json={
-        'email': 'jerome@test.com',
+        'email': 'john@test.com',
         'password': 'password'
         })
     json_login_response = login_response.get_json()
