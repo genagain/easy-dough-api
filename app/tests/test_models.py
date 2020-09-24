@@ -60,4 +60,4 @@ def test_create_transaction(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 750
-    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': 750 }
+    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': 7.50 }

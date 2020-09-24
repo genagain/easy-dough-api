@@ -87,7 +87,7 @@ def test_transactions_valid_date_range(client):
     response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
 
-    assert [{ 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': 2700} ] == json_response['transactions']
+    assert [{ 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': 27.00} ] == json_response['transactions']
 
 def test_transactions_no_start_date(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
@@ -186,7 +186,7 @@ def test_transactions_search_term_found(client):
     response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30&search_term=pizza+del', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
 
-    assert [{ 'date': '2020-06-21', 'description': 'Pizza Delivery', 'amount': 2000} ] == json_response['transactions']
+    assert [{ 'date': '2020-06-21', 'description': 'Pizza Delivery', 'amount': 20.00} ] == json_response['transactions']
 
 def test_transactions_search_term_not_found(client):
     hashed_password = generate_password_hash('password').decode('utf-8')

@@ -18,6 +18,7 @@ class Transaction(db.Model):
 
     def to_dict(self):
         row = self.__dict__
-        return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': self.amount }
+        dollar_amount = round(self.amount/100, 2)
+        return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': dollar_amount }
 
 ## TODO consider adding a uniqueness constraint on multiple columns to avoid dupliates
