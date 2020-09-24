@@ -9,7 +9,7 @@ from .utils import client
 
 ## TODO add a fixture to create this user before most of these tests
     # user = User(
-            # firstname='Test',
+            # firstname='Doe',
             # lastname='User',
             # email='test@test.com',
             # password='password'
@@ -22,9 +22,9 @@ def test_valid_signup(client):
     assert no_user is None
 
     body = {
-        'firstname': 'Jane',
-        'lastname' : 'Test',
-        'email': 'jane@test.com',
+        'firstname': 'John',
+        'lastname' : 'Doe',
+        'email': 'john@test.com',
         'password': 'password'
         }
     response = client.post('/auth/signup', json=body)
@@ -33,7 +33,7 @@ def test_valid_signup(client):
     assert message == "Successfully created a new user"
     assert response.status_code == 200
 
-    user =  User.query.filter_by(email='jane@test.com').first()
+    user =  User.query.filter_by(email='john@test.com').first()
     assert user is not None
     assert user.firstname == body['firstname']
     assert user.lastname == body['lastname']
@@ -42,32 +42,32 @@ def test_valid_signup(client):
 
 def test_duplicate_signup(client):
     user = User(
-            firstname='Jerry',
-            lastname='Test',
-            email='jerry@test.com',
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
             password='password'
             )
     db.session.add(user)
     db.session.commit()
 
     body = {
-        'firstname': 'Jerry',
+        'firstname': 'John',
         'lastname' : 'Doe',
-        'email': 'jerry@test.com',
+        'email': 'john@test.com',
         'password': 'password'
         }
 
     response = client.post('/auth/signup', json=body)
     json_response = response.get_json()
     message = json_response['message']
-    assert message == "A user with the email jerry@test.com already exists"
+    assert message == "A user with the email john@test.com already exists"
     assert response.status_code == 501
 
 def test_invalid_format_signup(client):
     body = {
-        'firstname': 'Jonah',
-        'lastname' : 'Test',
-        'email': 'Jonah@test.com',
+        'firstname': 'John',
+        'lastname' : 'Doe',
+        'email': 'john@test.com',
         'password': 'password'
         }
     response = client.post('/auth/signup', data=body)
@@ -80,9 +80,9 @@ def test_invalid_format_signup(client):
 def test_invalid_body_signup(client):
     for attribute in ['firstname', 'lastname', 'email', 'password']:
         invalid_body = {
-            'firstname': 'Jonah',
-            'lastname' : 'Test',
-            'email': 'Jonah@test.com',
+            'firstname': 'John',
+            'lastname' : 'Doe',
+            'email': 'john@test.com',
             'password': 'password'
         }
         invalid_body.pop(attribute)
@@ -95,37 +95,37 @@ def test_invalid_body_signup(client):
 def test_valid_login(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
     user = User(
-            firstname='James',
-            lastname='Test',
-            email='james@test.com',
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
             password=hashed_password
             )
     db.session.add(user)
     db.session.commit()
 
     response = client.post('/auth/login', json={
-        'email': 'james@test.com',
+        'email': 'john@test.com',
         'password': 'password'
         })
     json_response = response.get_json()
     access_token = json_response['access_token']
     decoded_token = decode_token(access_token)
-    assert decoded_token['identity'] == 'james@test.com'
+    assert decoded_token['identity'] == 'john@test.com'
     assert response.status_code == 200
 
 def test_invalid_login(client):
     hashed_password = generate_password_hash('password').decode('utf-8')
     user = User(
-            firstname='Jacki',
-            lastname='Test',
-            email='jacki@test.com',
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
             password=hashed_password
             )
     db.session.add(user)
     db.session.commit()
 
     response = client.post('/auth/login', json={
-        'email': 'jacki@test.com',
+        'email': 'john@test.com',
         'password': 'bad password'
         })
     json_response = response.get_json()
@@ -135,7 +135,7 @@ def test_invalid_login(client):
 
 def test_invalid_format_login(client):
     response = client.post('/auth/login', data={
-        'email': 'test@test.com',
+        'email': 'john@test.com',
         'password': 'password'
         })
     json_response = response.get_json()

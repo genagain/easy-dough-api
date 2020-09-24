@@ -14,26 +14,25 @@ def context():
         db.create_all()
         yield context
 
-
 def test_create_user(context):
     user = User(
-            firstname='Jesse',
+            firstname='John',
             lastname='Test',
-            email='jesse@test.com',
+            email='john@test.com',
             password='password'
             )
     db.session.add(user)
     db.session.commit()
-    assert user.firstname == 'Jesse'
+    assert user.firstname == 'John'
     assert user.lastname == 'Test'
-    assert user.email == 'jesse@test.com'
+    assert user.email == 'john@test.com'
     assert user.password == 'password'
 
 def test_unique_email_constraint_user(context):
     user = User(
-            firstname='Test',
+            firstname='John',
             lastname='User',
-            email='test@test.com',
+            email='john@test.com',
             password='password'
             )
     db.session.add(user)
@@ -41,8 +40,8 @@ def test_unique_email_constraint_user(context):
 
     user1 = User(
             firstname='John',
-            lastname='Doe',
-            email='test@test.com',
+            lastname='Test',
+            email='john@test.com',
             password='test'
             )
     db.session.add(user1)
@@ -60,3 +59,4 @@ def test_create_transaction(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 750
+    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': 7.50 }

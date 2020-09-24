@@ -19,9 +19,9 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     app.config.from_object(Configuration)
-    from .routes import auth, dashboard
+    from .routes import auth, transactions
     app.register_blueprint(auth.bp)
-    app.register_blueprint(dashboard.bp)
+    app.register_blueprint(transactions.bp)
     jwt.init_app(app)
     bcrypt.init_app(app)
     db.init_app(app)
