@@ -23,11 +23,11 @@ def transactions():
 
     search_term = request.args.get('search_term')
     if not search_term:
-        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).all()
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).order_by(Transaction.date.desc()).all()
     else:
         search_clause = f"%{search_term}%"
-        # transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
-        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).all()
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
+        # transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).all()
 
     transactions_data = list(map(lambda t: t.to_dict(), transactions))
     ## TODO consider putting this check before converting each row to a dict
@@ -38,9 +38,10 @@ def transactions():
     month_transactions = {}
     for transaction in transactions:
         month = transaction.date.strftime('%B')
-        # TODO account for else case to append sorted transactions
         if month not in month_transactions:
             month_transactions[month] = [ transaction.to_dict() ]
+        else:
+            month_transactions[month].append(transaction.to_dict())
 
     response_body = [ { 'month': month, 'transactions': transactions} for month, transactions in month_transactions.items()]
     return jsonify(response_body), 200
