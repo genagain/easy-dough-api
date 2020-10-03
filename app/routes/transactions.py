@@ -28,12 +28,9 @@ def transactions():
         search_clause = f"%{search_term}%"
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
 
-    transactions_data = list(map(lambda t: t.to_dict(), transactions))
-    ## TODO consider putting this check before converting each row to a dict
-    if transactions_data == []:
+    if transactions == []:
         return { 'message': 'No transactions were found that matched the provided search term or date range' }
 
-    response = []
     month_transactions = {}
     for transaction in transactions:
         month = transaction.date.strftime('%B')
