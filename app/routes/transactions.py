@@ -27,7 +27,6 @@ def transactions():
     else:
         search_clause = f"%{search_term}%"
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
-        # transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).all()
 
     transactions_data = list(map(lambda t: t.to_dict(), transactions))
     ## TODO consider putting this check before converting each row to a dict
