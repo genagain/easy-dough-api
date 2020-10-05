@@ -21,4 +21,4 @@ class Transaction(db.Model):
         dollar_amount = round(self.amount/100, 2)
         return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': dollar_amount }
 
-## TODO consider adding a uniqueness constraint on multiple columns to avoid dupliates
+## TODO add a uniqueness constraint on multiple columns to avoid dupliates
