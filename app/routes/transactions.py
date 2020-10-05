@@ -28,10 +28,6 @@ def transactions():
         search_clause = f"%{search_term}%"
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
 
-# TODO remove this and update tests accordingly
-#     if transactions == []:
-        # return { 'message': 'No transactions were found that matched the provided date range or search term' }
-
     month_transactions = {}
     for transaction in transactions:
         month = transaction.date.strftime('%B')
