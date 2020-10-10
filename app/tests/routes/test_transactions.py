@@ -1,3 +1,4 @@
+from datetime import date
 import pytest
 
 from flask_bcrypt import generate_password_hash
@@ -359,3 +360,41 @@ def test_transactions_search_term_not_found(client):
     json_response = response.get_json()
 
     assert json_response == []
+
+def test_transactions_add(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    no_transaction = Transaction.query.filter_by(date='2020-10-04', description='Coffee').first()
+    assert no_transaction is None
+
+    login_response = client.post('/auth/login', json={
+        'email': 'john@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    request_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '14.00'
+    }
+
+    response = client.post('/transactions/create', headers={ "Authorization": f"Bearer {access_token}" }, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Transaction successfully created'
+
+    added_transaction = Transaction.query.filter_by(date='2020-10-04', description='Coffee').first()
+    assert added_transaction.date == date(2020, 10, 4)
+    assert added_transaction.description == 'Coffee'
+    assert added_transaction.amount == 1400
+

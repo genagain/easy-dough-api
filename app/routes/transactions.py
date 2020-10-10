@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from app import db
 from ..models import Transaction
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
@@ -38,3 +39,22 @@ def transactions():
 
     response_body = [ { 'month': month, 'transactions': transactions} for month, transactions in month_transactions.items()]
     return jsonify(response_body), 200
+
+@bp.route('/create', methods=['POST'], strict_slashes=False)
+@jwt_required
+def add_transaction():
+    current_user_email = get_jwt_identity()
+
+    body = request.json
+
+    date = body['date']
+    description = body['description']
+    amount = body['amount'].replace('.', '')
+
+    transaction = Transaction(date=date, description=description, amount=amount)
+    db.session.add(transaction)
+    db.session.commit()
+
+    if transaction:
+        return { 'message': 'Transaction successfully created' }, 200
+
