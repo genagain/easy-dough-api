@@ -90,7 +90,7 @@ def test_transactions_one_month_one_transaction(client):
     json_response = response.get_json()
 
     expected_month = 'June'
-    expected_transactions = [ { 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': 27.00 } ]
+    expected_transactions = [ { 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': '27.00' } ]
 
     response_month = json_response[0]
     assert response_month['month'] == expected_month
@@ -133,8 +133,8 @@ def test_transactions_one_month_two_transactions(client):
 
     expected_month = 'June'
     expected_transactions = [
-            { 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': 27.00 },
-            { 'date': '2020-06-09', 'description': 'Japanese restaurant', 'amount': 23.00 }
+            { 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': '27.00' },
+            { 'date': '2020-06-09', 'description': 'Japanese restaurant', 'amount': '23.00' }
             ]
 
     response_month = json_response[0]
@@ -277,7 +277,7 @@ def test_transactions_search_term_found_one_transaction(client):
     json_response = response.get_json()
 
     expected_month = 'July'
-    expected_transactions = [ { 'date': '2020-07-21', 'description': 'Pizza Delivery', 'amount': 20.00 } ]
+    expected_transactions = [ { 'date': '2020-07-21', 'description': 'Pizza Delivery', 'amount': '20.00' } ]
 
     response_month = json_response[0]
     assert response_month['month'] == expected_month
@@ -320,8 +320,8 @@ def test_transactions_search_term_found_two_transactions(client):
 
     expected_month = 'July'
     expected_transactions = [
-            { 'date': '2020-07-21', 'description': 'Pizza Delivery', 'amount': 20.00 },
-            { 'date': '2020-07-01', 'description': 'Pizza Delivery', 'amount': 15.00 }
+            { 'date': '2020-07-21', 'description': 'Pizza Delivery', 'amount': '20.00' },
+            { 'date': '2020-07-01', 'description': 'Pizza Delivery', 'amount': '15.00' }
             ]
 
     response_month = json_response[0]
