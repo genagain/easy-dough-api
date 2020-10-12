@@ -74,3 +74,20 @@ def test_create_transaction_with_ten_cents(context):
     assert transaction.amount == 710
     assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
 
+def test_unique_transaction(context):
+    transaction = Transaction(
+            date='2020-09-14',
+            description='Lyft',
+            amount='700'
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    transaction1 = Transaction(
+            date='2020-09-14',
+            description='Lyft',
+            amount='700'
+            )
+    db.session.add(transaction1)
+    with pytest.raises(IntegrityError) as error:
+      db.session.commit()

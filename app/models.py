@@ -17,6 +17,8 @@ class Transaction(db.Model):
     description = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer(), nullable=False)
 
+    __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', unique=True),)
+
     def to_dict(self):
         row = self.__dict__
         dollar_amount = str(round(self.amount/100, 2))
@@ -26,5 +28,3 @@ class Transaction(db.Model):
             formatted_dollar_amount = dollar_amount
 
         return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }
-
-## TODO add a uniqueness constraint on multiple columns to avoid dupliates
