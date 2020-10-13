@@ -395,3 +395,16 @@ def test_transactions_add_duplicate(client):
 
     assert response.status_code == 500
     assert response_body['message'] == 'Cannot create this transaction because it already exists'
+
+def test_unauthorized_transactions_add(client):
+    request_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '14.00'
+    }
+
+    response = client.post('/transactions/create', json=request_body)
+    json_response = response.get_json()
+    assert json_response['msg'] == 'Missing Authorization Header'
+
+## TODO test transaction create inputs like for auth/signup
