@@ -1,6 +1,7 @@
 from datetime import date
 import pytest
 from sqlalchemy.exc import IntegrityError
+from flask_bcrypt import check_password_hash
 
 from app import create_app, db
 from app.models import User, Transaction
@@ -47,6 +48,23 @@ def test_unique_email_constraint_user(context):
     db.session.add(user1)
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
+
+def test_create_user_hashed_password(context):
+    no_user = User.query.filter_by(email='john@test.com').first()
+    assert no_user is None
+
+    User.create(
+                firstname='John',
+                lastname='Doe',
+                email='john@test.com',
+                password='password'
+            )
+
+    user = User.query.filter_by(email='john@test.com').first()
+    assert user.firstname == 'John'
+    assert user.lastname == 'Doe'
+    assert user.email == 'john@test.com'
+    assert check_password_hash(user.password, 'password')
 
 def test_create_transaction(context):
     transaction = Transaction(

@@ -1,4 +1,5 @@
 import re
+from flask_bcrypt import generate_password_hash
 from app import db
 
 class User(db.Model):
@@ -8,6 +9,18 @@ class User(db.Model):
     lastname = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+
+    @classmethod
+    def create(cls, firstname, lastname, email, password):
+        hashed_password = generate_password_hash(password).decode('utf-8')
+        user = cls(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                password=hashed_password
+                )
+        db.session.add(user)
+        db.session.commit()
 
 
 class Transaction(db.Model):
