@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from ..models import Transaction
@@ -51,10 +52,13 @@ def add_transaction():
     description = body['description']
     amount = body['amount'].replace('.', '')
 
-    transaction = Transaction(date=date, description=description, amount=amount)
-    db.session.add(transaction)
-    db.session.commit()
+    try:
+        transaction = Transaction(date=date, description=description, amount=amount)
+        db.session.add(transaction)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return { 'message': 'Cannot create this transaction because it already exists' }, 500
 
-    if transaction:
-        return { 'message': 'Transaction successfully created' }, 200
+    return { 'message': 'Transaction successfully created' }, 200
 

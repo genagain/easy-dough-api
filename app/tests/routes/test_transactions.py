@@ -398,3 +398,40 @@ def test_transactions_add(client):
     assert added_transaction.description == 'Coffee'
     assert added_transaction.amount == 1400
 
+def test_transactions_add_duplicate(client):
+    hashed_password = generate_password_hash('password').decode('utf-8')
+    user = User(
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
+            password=hashed_password
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    transaction = Transaction(
+            date='2020-10-04',
+            description='Coffee',
+            amount=1400
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    login_response = client.post('/auth/login', json={
+        'email': 'john@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    request_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '14.00'
+    }
+
+    response = client.post('/transactions/create', headers={ "Authorization": f"Bearer {access_token}" }, json=request_body)
+    response_body = response.get_json()
+
+    assert response.status_code == 500
+    assert response_body['message'] == 'Cannot create this transaction because it already exists'
