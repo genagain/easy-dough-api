@@ -20,15 +20,12 @@ def signup():
     if not set(body.keys()) == set(required_fields):
         return { "message": "Invalid body: body must contain firstname, lastname, email and password" }, 501
     try:
-        hashed_password = generate_password_hash(body['password']).decode('utf-8')
-        user = User(
+        User.create(
                 firstname=body['firstname'],
                 lastname=body['lastname'],
                 email=body['email'],
-                password=hashed_password
+                password=body['password']
                 )
-        db.session.add(user)
-        db.session.commit()
     except IntegrityError:
         db.session.rollback()
         return { 'message': f"A user with the email {body['email']} already exists" }, 501
