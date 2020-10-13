@@ -436,6 +436,36 @@ def test_invalid_format_transaction_add(client):
     assert message == "Invalid format: body must be JSON"
     assert response.status_code == 501
 
+def test_invalid_body_transaction_add(client):
+    User.create(
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
+            password='password'
+            )
+
+    login_response = client.post('/auth/login', json={
+        'email': 'john@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    for attribute in ['date', 'description', 'amount']:
+        invalid_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '14.00'
+            }
+        invalid_body.pop(attribute)
+        response = client.post('/transactions/create', headers={ "Authorization": f"Bearer {access_token}" }, json=invalid_body)
+        response_body = response.get_json()
+        message = response_body['message']
+
+        assert message == "Invalid format: body must contain date, description and amount"
+        assert response.status_code == 501
+
+
 
 
 ## TODO test transaction create inputs like for auth/signup

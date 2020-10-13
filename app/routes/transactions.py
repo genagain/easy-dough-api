@@ -47,9 +47,13 @@ def add_transaction():
     if request.mimetype != 'application/json':
         return { "message": "Invalid format: body must be JSON" }, 501
 
-    current_user_email = get_jwt_identity()
 
     body = request.json
+    required_fields =  ['date', 'description', 'amount']
+    if not set(body.keys()) == set(required_fields):
+        return { "message": "Invalid format: body must contain date, description and amount" }, 501
+
+    current_user_email = get_jwt_identity()
 
     date = body['date']
     description = body['description']
