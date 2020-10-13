@@ -41,14 +41,12 @@ def test_valid_signup(client):
     assert check_password_hash(user.password, body['password'])
 
 def test_duplicate_signup(client):
-    user = User(
+    User.create(
             firstname='John',
             lastname='Doe',
             email='john@test.com',
             password='password'
             )
-    db.session.add(user)
-    db.session.commit()
 
     body = {
         'firstname': 'John',
@@ -93,15 +91,12 @@ def test_invalid_body_signup(client):
         assert response.status_code == 501
 
 def test_valid_login(client):
-    hashed_password = generate_password_hash('password').decode('utf-8')
-    user = User(
+    User.create(
             firstname='John',
             lastname='Doe',
             email='john@test.com',
-            password=hashed_password
+            password='password'
             )
-    db.session.add(user)
-    db.session.commit()
 
     response = client.post('/auth/login', json={
         'email': 'john@test.com',
@@ -114,15 +109,12 @@ def test_valid_login(client):
     assert response.status_code == 200
 
 def test_invalid_login(client):
-    hashed_password = generate_password_hash('password').decode('utf-8')
-    user = User(
+    User.create(
             firstname='John',
             lastname='Doe',
             email='john@test.com',
-            password=hashed_password
+            password='password'
             )
-    db.session.add(user)
-    db.session.commit()
 
     response = client.post('/auth/login', json={
         'email': 'john@test.com',
