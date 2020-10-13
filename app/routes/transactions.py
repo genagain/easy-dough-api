@@ -44,6 +44,9 @@ def transactions():
 @bp.route('/create', methods=['POST'], strict_slashes=False)
 @jwt_required
 def add_transaction():
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
     current_user_email = get_jwt_identity()
 
     body = request.json
@@ -58,7 +61,7 @@ def add_transaction():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return { 'message': 'Cannot create this transaction because it already exists' }, 500
+        return { 'message': 'Cannot create this transaction because it already exists' }, 501
 
     return { 'message': 'Transaction successfully created' }, 200
 
