@@ -18,6 +18,7 @@ scheduler = BackgroundScheduler()
 def create_app():
     app = Flask(__name__)
     CORS(app)
+    app.config['CORS_HEADERS'] = 'Content-Type'
     app.config.from_object(Configuration)
     from .routes import auth, transactions
     app.register_blueprint(auth.bp)
