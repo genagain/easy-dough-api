@@ -465,7 +465,3 @@ def test_invalid_body_transaction_add(client):
         assert message == "Invalid format: body must contain date, description and amount"
         assert response.status_code == 501
 
-
-
-
-## TODO test transaction create inputs like for auth/signup
