@@ -10,6 +10,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/', methods=['GET'], strict_slashes=False)
 @jwt_required
 def transactions():
+    ## TODO somehow only show the transactions associated with a user in the future
     current_user_email = get_jwt_identity()
     valid_query_parameters = ['start_date', 'end_date', 'search_term']
     extra_query_parameters = set(request.args.keys()) - set(valid_query_parameters)
