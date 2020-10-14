@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.exc import IntegrityError
 
+from app import db
 from ..models import Transaction
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
@@ -8,6 +10,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/', methods=['GET'], strict_slashes=False)
 @jwt_required
 def transactions():
+    ## TODO somehow only show the transactions associated with a user in the future
     current_user_email = get_jwt_identity()
     valid_query_parameters = ['start_date', 'end_date', 'search_term']
     extra_query_parameters = set(request.args.keys()) - set(valid_query_parameters)
@@ -38,3 +41,32 @@ def transactions():
 
     response_body = [ { 'month': month, 'transactions': transactions} for month, transactions in month_transactions.items()]
     return jsonify(response_body), 200
+
+@bp.route('/create', methods=['POST'], strict_slashes=False)
+@jwt_required
+def add_transaction():
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
+
+    body = request.json
+    required_fields =  ['date', 'description', 'amount']
+    if not set(body.keys()) == set(required_fields):
+        return { "message": "Invalid format: body must contain date, description and amount" }, 501
+
+    current_user_email = get_jwt_identity()
+
+    date = body['date']
+    description = body['description']
+    amount = body['amount'].replace('.', '')
+
+    try:
+        transaction = Transaction(date=date, description=description, amount=amount)
+        db.session.add(transaction)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return { 'message': 'Cannot create this transaction because it already exists' }, 501
+
+    return { 'message': 'Transaction successfully created' }, 200
+
