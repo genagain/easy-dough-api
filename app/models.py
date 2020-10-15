@@ -33,11 +33,10 @@ class Transaction(db.Model):
     __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', unique=True),)
 
     def to_dict(self):
-        row = self.__dict__
         dollar_amount = str(round(self.amount/100, 2))
         if re.match(r'^\d{0,3},{0,1}\d{0,3}\.\d$', dollar_amount):
             formatted_dollar_amount = f'{dollar_amount}0'
         else:
             formatted_dollar_amount = dollar_amount
 
-        return { 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }
+        return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }

@@ -77,7 +77,7 @@ def test_create_transaction(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
 
 def test_create_transaction_with_ten_cents(context):
     transaction = Transaction(
@@ -90,7 +90,7 @@ def test_create_transaction_with_ten_cents(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 710
-    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
 
 def test_unique_transaction(context):
     transaction = Transaction(
