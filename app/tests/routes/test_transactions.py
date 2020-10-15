@@ -465,3 +465,36 @@ def test_invalid_body_transaction_add(client):
         assert message == "Invalid format: body must contain date, description and amount"
         assert response.status_code == 501
 
+def test_transaction_delete(client):
+    transaction = Transaction(
+            date='2020-10-04',
+            description='Coffee',
+            amount=1400
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    User.create(
+            firstname='John',
+            lastname='Doe',
+            email='john@test.com',
+            password='password'
+            )
+
+    login_response = client.post('/auth/login', json={
+        'email': 'john@test.com',
+        'password': 'password'
+        })
+    json_login_response = login_response.get_json()
+    access_token = json_login_response['access_token']
+
+    response = client.delete('/transactions/1', headers={ "Authorization": f"Bearer {access_token}" })
+    response_body = response.get_json()
+
+    message = response_body['message']
+
+    assert message == "Transaction successfully deleted"
+    assert response.status_code == 200
+
+    deleted_transaction = Transaction.query.filter_by(date='2020-10-04', description='Coffee').first()
+    assert deleted_transaction == None

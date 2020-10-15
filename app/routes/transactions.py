@@ -70,3 +70,12 @@ def add_transaction():
 
     return { 'message': 'Transaction successfully created' }, 200
 
+@bp.route('/<int:transaction_id>', methods=['delete'], strict_slashes=False)
+@jwt_required
+def delete_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    db.session.delete(transaction)
+    db.session.commit()
+
+    return { 'message': 'Transaction successfully deleted' }, 200
+
