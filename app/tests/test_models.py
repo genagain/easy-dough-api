@@ -53,14 +53,13 @@ def test_create_user_hashed_password(context):
     no_user = User.query.filter_by(email='john@test.com').first()
     assert no_user is None
 
-    User.create(
+    user = User.create(
                 firstname='John',
                 lastname='Doe',
                 email='john@test.com',
                 password='password'
             )
 
-    user = User.query.filter_by(email='john@test.com').first()
     assert user.firstname == 'John'
     assert user.lastname == 'Doe'
     assert user.email == 'john@test.com'
