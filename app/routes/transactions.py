@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app import db
 from ..models import Transaction
@@ -69,4 +70,16 @@ def add_transaction():
         return { 'message': 'Cannot create this transaction because it already exists' }, 501
 
     return { 'message': 'Transaction successfully created' }, 200
+
+@bp.route('/<int:transaction_id>', methods=['delete'], strict_slashes=False)
+@jwt_required
+def delete_transaction(transaction_id):
+    try:
+        transaction = Transaction.query.get(transaction_id)
+        db.session.delete(transaction)
+        db.session.commit()
+    except UnmappedInstanceError:
+        return { 'message': 'Cannot delete this transaction because it does not exist' }, 501
+
+    return { 'message': 'Transaction successfully deleted' }, 200
 

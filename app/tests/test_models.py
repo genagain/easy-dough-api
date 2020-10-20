@@ -53,14 +53,13 @@ def test_create_user_hashed_password(context):
     no_user = User.query.filter_by(email='john@test.com').first()
     assert no_user is None
 
-    User.create(
+    user = User.create(
                 firstname='John',
                 lastname='Doe',
                 email='john@test.com',
                 password='password'
             )
 
-    user = User.query.filter_by(email='john@test.com').first()
     assert user.firstname == 'John'
     assert user.lastname == 'Doe'
     assert user.email == 'john@test.com'
@@ -77,7 +76,7 @@ def test_create_transaction(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
 
 def test_create_transaction_with_ten_cents(context):
     transaction = Transaction(
@@ -90,7 +89,7 @@ def test_create_transaction_with_ten_cents(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 710
-    assert transaction.to_dict() == { 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
 
 def test_unique_transaction(context):
     transaction = Transaction(
