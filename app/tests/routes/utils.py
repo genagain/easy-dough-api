@@ -15,7 +15,6 @@ def client():
 
 @pytest.fixture
 def login_test_user(client):
-    # import pdb; pdb.set_trace()
     email = 'john@test.com'
     password = 'password'
     User.create(
