@@ -3,27 +3,15 @@ import pytest
 
 from app import db
 from app.models import User, Transaction
-from .utils import client
+from .utils import client, login_test_user
 
 def test_unauthorized_transactions(client):
     response = client.get('/transactions')
     json_response = response.get_json()
     assert json_response['msg'] == 'Missing Authorization Header'
 
-def test_transactions_no_query_params(client):
-    User.create(
-            firstname='John',
-            lastname='Test',
-            email='john@test.com',
-            password='password'
-            )
-
-    login_response = client.post('/auth/login', json={
-        'email': 'john@test.com',
-        'password': 'password'
-        })
-    json_login_response = login_response.get_json()
-    access_token = json_login_response['access_token']
+def test_transactions_no_query_params(client, login_test_user):
+    access_token = login_test_user
 
     response = client.get('/transactions', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
