@@ -49,7 +49,6 @@ def add_transaction():
     if request.mimetype != 'application/json':
         return { "message": "Invalid format: body must be JSON" }, 501
 
-
     body = request.json
     required_fields =  ['date', 'description', 'amount']
     if not set(body.keys()) == set(required_fields):
@@ -83,3 +82,29 @@ def delete_transaction(transaction_id):
 
     return { 'message': 'Transaction successfully deleted' }, 200
 
+@bp.route('/<int:transaction_id>', methods=['put'], strict_slashes=False)
+@jwt_required
+def update_transaction(transaction_id):
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
+    transaction = Transaction.query.get(transaction_id)
+    body = request.json
+
+    required_fields =  ['date', 'description', 'amount']
+    if not set(body.keys()) == set(required_fields):
+        return { "message": "Invalid format: body must contain date, description and amount" }, 501
+
+    date = body['date']
+    description = body['description']
+    amount = int(body['amount'].replace('.', ''))
+
+    try:
+        transaction.date = date
+        transaction.description = description
+        transaction.amount = amount
+        db.session.commit()
+
+        return { 'message': 'Transaction successfully updated' }, 200
+    except AttributeError:
+        return { 'message': 'Cannot update this transaction because it does not exist' }, 501
