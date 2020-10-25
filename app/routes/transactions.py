@@ -97,7 +97,10 @@ def update_transaction(transaction_id):
     description = body['description']
     amount = int(body['amount'].replace('.', ''))
 
-    transaction.query.update({'date': date, 'description': description, 'amount': amount})
-    db.session.commit()
+    try:
+        transaction.query.update({'date': date, 'description': description, 'amount': amount})
+        db.session.commit()
 
-    return { 'message': 'Transaction successfully updated' }, 200
+        return { 'message': 'Transaction successfully updated' }, 200
+    except AttributeError:
+        return { 'message': 'Cannot update this transaction because it does not exist' }, 501

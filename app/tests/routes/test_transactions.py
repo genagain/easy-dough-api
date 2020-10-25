@@ -379,4 +379,21 @@ def test_invalid_body_transaction_update(client, login_test_user):
         assert message == "Invalid format: body must contain date, description and amount"
         assert response.status_code == 501
 
+def test_invalid_transaction_update(client, login_test_user):
+    access_token = login_test_user
+
+    request_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '4.00'
+    }
+
+    response = client.put('/transactions/1', headers={ "Authorization": f"Bearer {access_token}" }, json=request_body)
+    response_body = response.get_json()
+
+    message = response_body['message']
+
+    assert message == "Cannot update this transaction because it does not exist"
+    assert response.status_code == 501
+
 
