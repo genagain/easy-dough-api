@@ -100,7 +100,9 @@ def update_transaction(transaction_id):
     amount = int(body['amount'].replace('.', ''))
 
     try:
-        transaction.query.update({'date': date, 'description': description, 'amount': amount})
+        transaction.date = date
+        transaction.description = description
+        transaction.amount = amount
         db.session.commit()
 
         return { 'message': 'Transaction successfully updated' }, 200
