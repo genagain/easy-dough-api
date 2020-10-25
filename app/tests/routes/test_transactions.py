@@ -326,3 +326,30 @@ def test_invalid_transaction_delete(client, login_test_user):
 
     assert message == "Cannot delete this transaction because it does not exist"
     assert response.status_code == 501
+
+def test_valid_transaction_update(client, login_test_user):
+    transaction = Transaction(
+            date='2020-10-04',
+            description='Coffee',
+            amount=1400
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    access_token = login_test_user
+
+    request_body = {
+            'date': '2020-10-04',
+            'description': 'Coffee',
+            'amount': '4.00'
+    }
+
+    response = client.put('/transactions/1', headers={ "Authorization": f"Bearer {access_token}" }, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Transaction successfully updated'
+
+    updated_transaction = Transaction.query.get(1)
+    assert updated_transaction.date == date(2020, 10, 4)
+    assert updated_transaction.description == 'Coffee'
+    assert updated_transaction.amount == 400

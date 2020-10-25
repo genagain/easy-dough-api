@@ -83,3 +83,17 @@ def delete_transaction(transaction_id):
 
     return { 'message': 'Transaction successfully deleted' }, 200
 
+@bp.route('/<int:transaction_id>', methods=['put'], strict_slashes=False)
+@jwt_required
+def update_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    body = request.json
+
+    date = body['date']
+    description = body['description']
+    amount = int(body['amount'].replace('.', ''))
+
+    transaction.query.update({'date': date, 'description': description, 'amount': amount})
+    db.session.commit()
+
+    return { 'message': 'Transaction successfully updated' }, 200
