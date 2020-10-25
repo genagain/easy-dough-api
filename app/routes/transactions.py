@@ -89,6 +89,10 @@ def update_transaction(transaction_id):
     transaction = Transaction.query.get(transaction_id)
     body = request.json
 
+    required_fields =  ['date', 'description', 'amount']
+    if not set(body.keys()) == set(required_fields):
+        return { "message": "Invalid format: body must contain date, description and amount" }, 501
+
     date = body['date']
     description = body['description']
     amount = int(body['amount'].replace('.', ''))
