@@ -396,4 +396,28 @@ def test_invalid_transaction_update(client, login_test_user):
     assert message == "Cannot update this transaction because it does not exist"
     assert response.status_code == 501
 
+def test_invalid_format_transaction_update(client, login_test_user):
+    transaction = Transaction(
+            date='2020-10-04',
+            description='Coffee',
+            amount=1400
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    access_token = login_test_user
+
+    request_body = {
+        'date': '2020-10-04',
+        'description': 'Coffee',
+        'amount': '4.00'
+    }
+
+    response = client.put('/transactions/1', headers={ "Authorization": f"Bearer {access_token}" }, data=request_body)
+    response_body = response.get_json()
+    message = response_body['message']
+
+    assert message == "Invalid format: body must be JSON"
+    assert response.status_code == 501
+
 

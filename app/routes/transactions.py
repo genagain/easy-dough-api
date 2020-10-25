@@ -49,7 +49,6 @@ def add_transaction():
     if request.mimetype != 'application/json':
         return { "message": "Invalid format: body must be JSON" }, 501
 
-
     body = request.json
     required_fields =  ['date', 'description', 'amount']
     if not set(body.keys()) == set(required_fields):
@@ -86,6 +85,9 @@ def delete_transaction(transaction_id):
 @bp.route('/<int:transaction_id>', methods=['put'], strict_slashes=False)
 @jwt_required
 def update_transaction(transaction_id):
+    if request.mimetype != 'application/json':
+        return { "message": "Invalid format: body must be JSON" }, 501
+
     transaction = Transaction.query.get(transaction_id)
     body = request.json
 
