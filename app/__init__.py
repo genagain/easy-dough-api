@@ -14,6 +14,7 @@ migrate = Migrate()
 jwt = JWTManager()
 bcrypt = Bcrypt()
 scheduler = BackgroundScheduler()
+## TODO create plaid client
 
 def create_app():
     app = Flask(__name__)

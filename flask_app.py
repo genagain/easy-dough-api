@@ -27,6 +27,7 @@ def add_user():
         db.session.add(user)
         db.session.commit()
 
+## TODO move client to create app factory
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
     PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')

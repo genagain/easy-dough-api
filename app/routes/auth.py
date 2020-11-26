@@ -1,11 +1,19 @@
 from flask import Blueprint, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
+from plaid import Client
 
 from app import db
 from app.models import User
+
+## TODO Move all of this to the app init file
+import os
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
+client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, environment=PLAID_ENV, api_version='2019-05-29')
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -50,3 +58,28 @@ def login_access_token():
 
     access_token = create_access_token(identity=email)
     return {'access_token': access_token}, 200
+
+
+@bp.route('/create_link_token', methods=['GET'])
+@jwt_required
+def create_link_token():
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+    client_user_id = str(user.id)
+
+    response = client.LinkToken.create({
+        'user': {
+            'client_user_id': client_user_id
+        },
+        'products': ["transactions"],
+        'client_name': "My App",
+        'country_codes': ['US'],
+        'language': 'en',
+        'webhook': 'https://sample.webhook.com'
+    })
+
+    link_token = response['link_token']
+
+    return response, 200
+    ## Follow this https://plaid.com/docs/link/link-token-migration-guide/
+
