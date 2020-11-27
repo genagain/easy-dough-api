@@ -82,7 +82,27 @@ def create_link_token():
 
     return response, 200
 
-# TODO create public token exchange endpoint for post requests
-# TODO create bank account with access token
-# TODO create accounts for bank account
-# TODO associate the bank and bank accounts with the user
+@bp.route('/exchange_public_token', methods=['POST'])
+@jwt_required
+def exchange_public_token():
+    # TODO create public token exchange endpoint for post requests
+    body = request.json
+    public_token = body['public_token']
+    exchange_response = client.Item.public_token.exchange(public_token)
+    access_token = exchange_response['access_token']
+
+    # TODO create bank account with access token
+    item_response = client.Item.get(access_token)
+    item = item_response['item']
+    institution_id = item['institution_id']
+    institution_response = client.Institutions.get_by_id(institution_id)
+    institution = institution_response['institution']
+    bank_name = institution['name']
+    print(bank_name)
+
+    # TODO associate the bank and bank accounts with the user
+    accounts_response = client.Accounts.get(access_token)
+    accounts = accounts_response['accounts']
+    print(accounts[0]['name'])
+
+    return { 'access_token': access_token }, 200
