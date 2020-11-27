@@ -81,5 +81,8 @@ def create_link_token():
     link_token = response['link_token']
 
     return response, 200
-    ## Follow this https://plaid.com/docs/link/link-token-migration-guide/
 
+# TODO create public token exchange endpoint for post requests
+# TODO create bank account with access token
+# TODO create accounts for bank account
+# TODO associate the bank and bank accounts with the user
