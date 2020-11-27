@@ -85,7 +85,6 @@ def create_link_token():
 @bp.route('/exchange_public_token', methods=['POST'])
 @jwt_required
 def exchange_public_token():
-    # TODO create public token exchange endpoint for post requests
     body = request.json
     public_token = body['public_token']
     exchange_response = client.Item.public_token.exchange(public_token)
@@ -95,14 +94,15 @@ def exchange_public_token():
     item_response = client.Item.get(access_token)
     item = item_response['item']
     institution_id = item['institution_id']
-    institution_response = client.Institutions.get_by_id(institution_id)
+    institution_response = client.Institutions.get_by_id(institution_id, { 'include_optional_metadata': True})
     institution = institution_response['institution']
     bank_name = institution['name']
+    bank_logo = institution['logo']
     print(bank_name)
 
     # TODO associate the bank and bank accounts with the user
     accounts_response = client.Accounts.get(access_token)
     accounts = accounts_response['accounts']
-    print(accounts[0]['name'])
+    print(list(map(lambda account: { 'name': account['name'], 'type': account['subtype'] }, accounts)))
 
-    return { 'access_token': access_token }, 200
+    return { 'message': f'Successfully added {bank_name}' }, 200
