@@ -46,11 +46,23 @@ class Transaction(db.Model):
 
 class Bank(db.Model):
     __tablename__ = "banks"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     access_token = db.Column(db.String(255), nullable=False)
     logo = db.Column(db.Text(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates="banks")
+    accounts = relationship('Account', back_populates="bank")
 
     __table_args__ = (db.Index('unique_bank_index', 'name', 'user_id', unique=True),)
+
+class Account(db.Model):
+    __tablename__ = "accounts"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    plaid_account_id = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    type = db.Column(db.String(128), nullable=False)
+    bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
+    bank = relationship('Bank', back_populates="accounts")
