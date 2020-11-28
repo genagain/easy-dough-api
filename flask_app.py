@@ -31,10 +31,12 @@ def add_user():
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
     ## TODO make sure access tokens persisted at the user/account level
+    # TODO get this from the each bank
     access_token = os.getenv('ACCESS_TOKEN')
     # TODO change this to a day's worth of transactions once I have live data
     start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-30))
     end_date = '{:%Y-%m-%d}'.format(datetime.now())
+    # TODO iterate through each bank
     transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
     transactions_data = transactions_response['transactions']
     with app.app_context():
