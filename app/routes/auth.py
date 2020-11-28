@@ -3,17 +3,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-# from plaid import Client
 
 from app import db, plaid_client
 from app.models import User, Bank, Account
-
-## TODO Move all of this to the app init file
-# import os
-# PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
-# PLAID_SECRET = os.getenv('PLAID_SECRET')
-# PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
-# client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, environment=PLAID_ENV, api_version='2019-05-29')
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 

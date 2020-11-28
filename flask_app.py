@@ -27,7 +27,6 @@ def add_user():
         db.session.add(user)
         db.session.commit()
 
-## TODO move client to create app factory
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
     ## TODO make sure access tokens persisted at the user/account level
