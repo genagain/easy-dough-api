@@ -67,6 +67,7 @@ def create_link_token():
     user = User.query.filter_by(email=current_user_email).first()
     client_user_id = str(user.id)
 
+    # TODO create bank class method
     response = plaid_client.LinkToken.create({
         'user': {
             'client_user_id': client_user_id
@@ -90,9 +91,11 @@ def exchange_public_token():
 
     body = request.json
     public_token = body['public_token']
+    # TODO create bank class method
     exchange_response = plaid_client.Item.public_token.exchange(public_token)
     access_token = exchange_response['access_token']
 
+    # TODO create bank class method that gets the logo and the name
     item_response = plaid_client.Item.get(access_token)
     item = item_response['item']
     institution_id = item['institution_id']
@@ -106,6 +109,7 @@ def exchange_public_token():
     db.session.add(bank)
     db.session.commit()
 
+    # TODO create account class method
     accounts_response = plaid_client.Accounts.get(access_token)
     accounts = accounts_response['accounts']
     for account in accounts:

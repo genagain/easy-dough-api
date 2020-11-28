@@ -37,9 +37,11 @@ def print_transactions():
     start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-30))
     end_date = '{:%Y-%m-%d}'.format(datetime.now())
     # TODO iterate through each bank
+    # TODO create a transactions class method
     transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
     transactions_data = transactions_response['transactions']
     with app.app_context():
+        # TODO make sure the transactions are associated to the correct account using the plaid account id
         # TODO use a try catch block if there is a uniqueness constraint on this column
         for transaction_datum in transactions_data:
             date = transaction_datum['date']
