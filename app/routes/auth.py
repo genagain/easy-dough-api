@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from plaid import Client
 
 from app import db
-from app.models import User, Bank
+from app.models import User, Bank, Account
 
 ## TODO Move all of this to the app init file
 import os
@@ -93,7 +93,6 @@ def exchange_public_token():
     exchange_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_response['access_token']
 
-    # TODO create bank account with access token
     item_response = client.Item.get(access_token)
     item = item_response['item']
     institution_id = item['institution_id']
@@ -107,9 +106,16 @@ def exchange_public_token():
     db.session.add(bank)
     db.session.commit()
 
-    # TODO associate the bank and bank accounts with the user
     accounts_response = client.Accounts.get(access_token)
     accounts = accounts_response['accounts']
-    print(list(map(lambda account: { 'account_id': account['account_id'], 'name': account['name'], 'type': account['subtype'] }, accounts)))
+    for account in accounts:
+        plaid_account_id = account['account_id']
+        name = account['name']
+        type = account['subtype']
+
+        account = Account(plaid_account_id=plaid_account_id, name=name, type=type, bank=bank)
+        db.session.add(bank)
+
+    db.session.commit()
 
     return { 'message': f'Successfully added {bank_name}' }, 200
