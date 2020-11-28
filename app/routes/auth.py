@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from plaid import Client
 
 from app import db
-from app.models import User
+from app.models import User, Bank
 
 ## TODO Move all of this to the app init file
 import os
@@ -85,6 +85,9 @@ def create_link_token():
 @bp.route('/exchange_public_token', methods=['POST'])
 @jwt_required
 def exchange_public_token():
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+
     body = request.json
     public_token = body['public_token']
     exchange_response = client.Item.public_token.exchange(public_token)
@@ -98,11 +101,15 @@ def exchange_public_token():
     institution = institution_response['institution']
     bank_name = institution['name']
     bank_logo = institution['logo']
-    print(bank_name)
+
+    # TODO create a class method maybe
+    bank = Bank(name=bank_name, logo=bank_logo, access_token=access_token, user=user)
+    db.session.add(bank)
+    db.session.commit()
 
     # TODO associate the bank and bank accounts with the user
     accounts_response = client.Accounts.get(access_token)
     accounts = accounts_response['accounts']
-    print(list(map(lambda account: { 'name': account['name'], 'type': account['subtype'] }, accounts)))
+    print(list(map(lambda account: { 'account_id': account['account_id'], 'name': account['name'], 'type': account['subtype'] }, accounts)))
 
     return { 'message': f'Successfully added {bank_name}' }, 200
