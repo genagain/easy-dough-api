@@ -3,17 +3,17 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-from plaid import Client
+# from plaid import Client
 
-from app import db
+from app import db, plaid_client
 from app.models import User, Bank, Account
 
 ## TODO Move all of this to the app init file
-import os
-PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
-PLAID_SECRET = os.getenv('PLAID_SECRET')
-PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
-client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, environment=PLAID_ENV, api_version='2019-05-29')
+# import os
+# PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+# PLAID_SECRET = os.getenv('PLAID_SECRET')
+# PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
+# client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, environment=PLAID_ENV, api_version='2019-05-29')
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -67,7 +67,7 @@ def create_link_token():
     user = User.query.filter_by(email=current_user_email).first()
     client_user_id = str(user.id)
 
-    response = client.LinkToken.create({
+    response = plaid_client.LinkToken.create({
         'user': {
             'client_user_id': client_user_id
         },
@@ -90,13 +90,13 @@ def exchange_public_token():
 
     body = request.json
     public_token = body['public_token']
-    exchange_response = client.Item.public_token.exchange(public_token)
+    exchange_response = plaid_client.Item.public_token.exchange(public_token)
     access_token = exchange_response['access_token']
 
-    item_response = client.Item.get(access_token)
+    item_response = plaid_client.Item.get(access_token)
     item = item_response['item']
     institution_id = item['institution_id']
-    institution_response = client.Institutions.get_by_id(institution_id, { 'include_optional_metadata': True})
+    institution_response = plaid_client.Institutions.get_by_id(institution_id, { 'include_optional_metadata': True})
     institution = institution_response['institution']
     bank_name = institution['name']
     bank_logo = institution['logo']
@@ -106,7 +106,7 @@ def exchange_public_token():
     db.session.add(bank)
     db.session.commit()
 
-    accounts_response = client.Accounts.get(access_token)
+    accounts_response = plaid_client.Accounts.get(access_token)
     accounts = accounts_response['accounts']
     for account in accounts:
         plaid_account_id = account['account_id']

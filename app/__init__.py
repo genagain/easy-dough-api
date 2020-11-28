@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from flask import Flask, render_template
 from .config import Configuration
@@ -8,6 +9,7 @@ from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
+from plaid import Client
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -15,6 +17,10 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 scheduler = BackgroundScheduler()
 ## TODO create plaid client
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
+plaid_client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET, environment=PLAID_ENV, api_version='2019-05-29')
 
 def create_app():
     app = Flask(__name__)
