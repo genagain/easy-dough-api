@@ -49,6 +49,7 @@ class Bank(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
+    # TODO consider changing this to plaid_access_token
     access_token = db.Column(db.String(255), nullable=False)
     logo = db.Column(db.Text(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -56,6 +57,10 @@ class Bank(db.Model):
     accounts = relationship('Account', back_populates="bank")
 
     __table_args__ = (db.Index('unique_bank_index', 'name', 'user_id', unique=True),)
+
+    ## TODO test method when testing model
+    def accounts_to_dict(self):
+        return list(map(lambda account: account.to_dict(), self.accounts))
 
 class Account(db.Model):
     __tablename__ = "accounts"
@@ -66,3 +71,7 @@ class Account(db.Model):
     type = db.Column(db.String(128), nullable=False)
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
     bank = relationship('Bank', back_populates="accounts")
+
+    ## TODO test method when testing model
+    def to_dict(self):
+        return {'name': self.name, 'type': self.type.capitalize() }

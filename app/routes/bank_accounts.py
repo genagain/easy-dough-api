@@ -15,3 +15,6 @@ def bank_accounts():
 
     if banks == []:
         return { 'message': 'No bank accounts have been added yet'}
+
+    banks_response = list(map(lambda bank: { 'name': bank.name, 'logo': bank.logo, 'accounts': bank.accounts_to_dict() }, banks))
+    return { 'banks': banks_response }, 200
