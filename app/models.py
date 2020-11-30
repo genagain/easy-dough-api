@@ -72,6 +72,5 @@ class Account(db.Model):
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
     bank = relationship('Bank', back_populates="accounts")
 
-    ## TODO test method when testing model
     def to_dict(self):
         return {'name': self.name, 'type': self.type.capitalize() }

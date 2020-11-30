@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import check_password_hash
 
 from app import create_app, db
-from app.models import User, Transaction
+from app.models import User, Transaction, Bank, Account
 
 @pytest.fixture
 def context():
@@ -108,3 +108,72 @@ def test_unique_transaction(context):
     db.session.add(transaction1)
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
+
+def test_valid_account(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    assert account.plaid_account_id == 'fake account id'
+    assert account.name == 'Checking Account'
+    assert account.type == 'checking'
+    assert account.bank == bank
+    assert account.to_dict() == { 'name': 'Checking Account', 'type': 'Checking' }
+
+def test_unique_account(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    account1 = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(account1)
+    with pytest.raises(IntegrityError) as error:
+      db.session.commit()
+
