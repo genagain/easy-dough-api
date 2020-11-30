@@ -109,6 +109,68 @@ def test_unique_transaction(context):
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
 
+def test_valid_bank(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    assert bank.name == 'Ally Bank'
+    assert bank.access_token == 'fake access token'
+    assert bank.logo == 'fake logo'
+    assert bank.user == user
+    assert account in bank.accounts
+    assert bank.accounts_to_dict() == [{ 'name': 'Checking Account', 'type': 'Checking'}]
+
+def test_unique_bank(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    db.session.add(bank)
+    db.session.commit()
+
+    bank1 = Bank(
+            name='Ally Bank',
+            access_token='another fake access token',
+            logo='another fake logo',
+            user=user
+            )
+    db.session.add(bank1)
+    with pytest.raises(IntegrityError) as error:
+      db.session.commit()
+
 def test_valid_account(context):
     user = User(
             firstname='John',
