@@ -58,7 +58,6 @@ class Bank(db.Model):
 
     __table_args__ = (db.Index('unique_bank_index', 'name', 'user_id', unique=True),)
 
-    ## TODO test method when testing model
     def accounts_to_dict(self):
         return list(map(lambda account: account.to_dict(), self.accounts))
 
