@@ -54,7 +54,7 @@ class Bank(db.Model):
     logo = db.Column(db.Text(), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates="banks")
-    accounts = relationship('Account', back_populates="bank")
+    accounts = relationship('Account', cascade="all,delete-orphan", back_populates="bank")
 
     __table_args__ = (db.Index('unique_bank_index', 'name', 'user_id', unique=True),)
 
