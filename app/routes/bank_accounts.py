@@ -16,5 +16,14 @@ def bank_accounts():
     if banks == []:
         return { 'message': 'No bank accounts have been added yet'}
 
-    banks_response = list(map(lambda bank: { 'name': bank.name, 'logo': bank.logo, 'accounts': bank.accounts_to_dict() }, banks))
+    banks_response = list(map(lambda bank: { 'id': bank.id,'name': bank.name, 'logo': bank.logo, 'accounts': bank.accounts_to_dict() }, banks))
     return { 'banks': banks_response }, 200
+
+@bp.route('/<int:bank_id>', methods=['DELETE'], strict_slashes=False)
+@jwt_required
+def delete_bank_account(bank_id):
+    bank = Bank.query.get(bank_id)
+    db.session.delete(bank)
+    db.session.commit()
+    return { 'message': 'Bank Accounts successfully deleted' }, 200
+
