@@ -53,7 +53,7 @@ def test_one_bank_two_accounts(client, login_test_user):
             }
 
 
-def test_delete_bank(client, login_test_user):
+def test_valid_bank_delete(client, login_test_user):
     access_token = login_test_user
     user = User.query.filter_by(email="john@test.com").first()
 
@@ -78,3 +78,11 @@ def test_delete_bank(client, login_test_user):
 
     deleted_account_2 = Account.query.filter_by(plaid_account_id="another fake account id").first()
     assert deleted_account_2 == None
+
+def test_invalid_bank_delete(client, login_test_user):
+    access_token = login_test_user
+
+    response = client.delete('/bank_accounts/1', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
+    assert json_response["message"] == 'Cannot delete these bank accounts because they do not exist'
+    assert response.status_code == 501
