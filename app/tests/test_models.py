@@ -285,3 +285,34 @@ def test_invalid_spending_plan_part(context):
             user=user
             )
 
+
+def test_unique_spending_plan_part(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    spending_plan_part = SpendingPlanPart(
+            category='Discretionary Spending',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=0,
+            user=user
+            )
+    db.session.add(spending_plan_part)
+    db.session.commit()
+
+    spending_plan_part1 = SpendingPlanPart(
+            category='Discretionary Spending',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=0,
+            user=user
+            )
+    db.session.add(spending_plan_part1)
+    with pytest.raises(IntegrityError) as error:
+        db.session.commit()
