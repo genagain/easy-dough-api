@@ -266,3 +266,22 @@ def test_valid_spending_plan_part(context):
     assert spending_plan_part.expected_amount == 0
     assert spending_plan_part.user == user
 
+def test_invalid_spending_plan_part(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    with pytest.raises(ValueError) as error:
+        spending_plan_part = SpendingPlanPart(
+            category='invalid category',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=0,
+            user=user
+            )
+

@@ -1,6 +1,6 @@
 import re
 from flask_bcrypt import generate_password_hash
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from app import db
 
 class User(db.Model):
@@ -86,3 +86,9 @@ class SpendingPlanPart(db.Model):
     user = relationship('User', back_populates="spending_plan_parts")
 
     __table_args__ = (db.Index('unique_spending_plan_parts_index', 'category', 'label', 'user_id', unique=True),)
+
+    @validates('category')
+    def validate_category(self, attribute, category):
+        if category not in ['Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending']:
+            raise ValueError("category must be one the following: 'Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending'")
+        return category
