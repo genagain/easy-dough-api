@@ -25,10 +25,11 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     app.config.from_object(Configuration)
-    from .routes import auth, transactions, bank_accounts
+    from .routes import auth, transactions, bank_accounts, spending_plan_parts
     app.register_blueprint(auth.bp)
     app.register_blueprint(transactions.bp)
     app.register_blueprint(bank_accounts.bp)
+    app.register_blueprint(spending_plan_parts.bp)
     jwt.init_app(app)
     bcrypt.init_app(app)
     db.init_app(app)
