@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_bcrypt import check_password_hash
 
 from app import create_app, db
-from app.models import User, Transaction, Bank, Account
+from app.models import User, Transaction, Bank, Account, SpendingPlanPart
 
 @pytest.fixture
 def context():
@@ -238,4 +238,31 @@ def test_unique_account(context):
     db.session.add(account1)
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
+
+
+def test_valid_spending_plan_part(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    spending_plan_part = SpendingPlanPart(
+            category='Discretionary Spending',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=0,
+            user=user
+            )
+    db.session.add(spending_plan_part)
+    db.session.commit()
+
+    assert spending_plan_part.category == 'Discretionary Spending'
+    assert spending_plan_part.label == 'Spending Money'
+    assert spending_plan_part.search_term == '*'
+    assert spending_plan_part.expected_amount == 0
+    assert spending_plan_part.user == user
 
