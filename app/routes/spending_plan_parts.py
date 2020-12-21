@@ -22,7 +22,10 @@ def spending_plan_parts():
     savings_parts = SpendingPlanPart.query.filter_by(user=user, category='Savings').order_by('id').all()
     savings = list(map(lambda part: { 'id': part.id, 'label': part.label, 'searchTerm': part.search_term, 'expectedAmount': part.expected_amount}, savings_parts))
 
-    spending_plan = { 'fixedCosts': fixed_costs, 'savings': savings, 'discretionarySpending': discretionary_spending }
+    investments_parts = SpendingPlanPart.query.filter_by(user=user, category='Investments').order_by('id').all()
+    investments = list(map(lambda part: { 'id': part.id, 'label': part.label, 'searchTerm': part.search_term, 'expectedAmount': part.expected_amount}, investments_parts))
+
+    spending_plan = { 'fixedCosts': fixed_costs, 'savings': savings, 'investments': investments, 'discretionarySpending': discretionary_spending }
 
     response = [(category, parts) for category, parts in spending_plan.items() if parts != []]
 
