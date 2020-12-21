@@ -35,7 +35,7 @@ def test_default_spending_plan_parts(client, login_test_user):
 
     response = client.get('/spending_plan_parts', headers={"Authorization": f"Bearer {access_token}"})
     json_response = response.get_json()
-    assert json_response == expected_response
+    assert json_response['spending_plan_parts'] == expected_response
 
 def test_fixed_costs_spending_plan_parts(client, login_test_user):
     access_token = login_test_user
@@ -140,7 +140,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
 
     response = client.get('/spending_plan_parts', headers={"Authorization": f"Bearer {access_token}"})
     json_response = response.get_json()
-    assert json_response == expected_response
+    assert json_response['spending_plan_parts'] == expected_response
 
 def test_savings_spending_plan_parts(client, login_test_user):
     access_token = login_test_user
@@ -262,7 +262,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
 
     response = client.get('/spending_plan_parts', headers={"Authorization": f"Bearer {access_token}"})
     json_response = response.get_json()
-    assert json_response == expected_response
+    assert json_response['spending_plan_parts'] == expected_response
 
 def test_investments_spending_plan_parts(client, login_test_user):
     access_token = login_test_user
@@ -401,4 +401,4 @@ def test_investments_spending_plan_parts(client, login_test_user):
 
     response = client.get('/spending_plan_parts', headers={"Authorization": f"Bearer {access_token}"})
     json_response = response.get_json()
-    assert json_response == expected_response
+    assert json_response['spending_plan_parts'] == expected_response

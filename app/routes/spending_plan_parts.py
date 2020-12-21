@@ -29,6 +29,6 @@ def spending_plan_parts():
 
     response = [(category, parts) for category, parts in spending_plan.items() if parts != []]
 
-    return dict(response), 200
+    return { 'spending_plan_parts': dict(response) }, 200
 
 
