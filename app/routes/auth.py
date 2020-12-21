@@ -5,7 +5,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 
 from app import db, plaid_client
-from app.models import User, Bank, Account
+from app.models import User, SpendingPlanPart, Bank, Account
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -20,7 +20,7 @@ def signup():
     if not set(body.keys()) == set(required_fields):
         return { "message": "Invalid body: body must contain firstname, lastname, email and password" }, 501
     try:
-        User.create(
+        user = User.create(
                 firstname=body['firstname'],
                 lastname=body['lastname'],
                 email=body['email'],
@@ -29,6 +29,16 @@ def signup():
     except IntegrityError:
         db.session.rollback()
         return { 'message': f"A user with the email {body['email']} already exists" }, 501
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
 
     return { 'message': "Successfully created a new user"}, 200
 
