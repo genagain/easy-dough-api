@@ -4,6 +4,7 @@ import random
 import string
 
 from flask_bcrypt import generate_password_hash
+from sqlalchemy.exc import IntegrityError
 from plaid import Client
 
 from app import create_app, db, scheduler, plaid_client
@@ -44,19 +45,21 @@ def print_transactions():
             transactions_data = transactions_response['transactions']
             for transaction_datum in transactions_data:
                 # TODO create a transactions class method
-                # TODO use a try catch block if there is a uniqueness constraint on this column
-                date = transaction_datum['date']
-                description = transaction_datum['name']
-                amount = int(transaction_datum['amount']) * 100
-                account = accounts_by_id[transaction_datum['account_id']]
-                transaction = Transaction(
-                               date=date,
-                               description=description,
-                               amount=amount,
-                               account=account
-                               )
-                db.session.add(transaction)
-                db.session.commit()
+                try:
+                    date = transaction_datum['date']
+                    description = transaction_datum['name']
+                    amount = int(transaction_datum['amount']) * 100
+                    account = accounts_by_id[transaction_datum['account_id']]
+                    transaction = Transaction(
+                                   date=date,
+                                   description=description,
+                                   amount=amount,
+                                   account=account
+                                   )
+                    db.session.add(transaction)
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
 
 
 scheduler.add_job(add_user, 'cron', hour=1)
