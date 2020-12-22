@@ -32,6 +32,9 @@ class Transaction(db.Model):
     date = db.Column(db.Date(), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer(), nullable=False)
+    # TODO associate with account
+    account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
+    account = relationship('Account', back_populates="transactions")
 
     __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', unique=True),)
 
@@ -70,6 +73,7 @@ class Account(db.Model):
     type = db.Column(db.String(128), nullable=False)
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
     bank = relationship('Bank', back_populates="accounts")
+    transactions = relationship('Transaction', cascade="all,delete-orphan", back_populates="account")
 
     def to_dict(self):
         return {'name': self.name, 'type': self.type.capitalize() }
