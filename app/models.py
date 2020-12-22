@@ -32,7 +32,6 @@ class Transaction(db.Model):
     date = db.Column(db.Date(), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer(), nullable=False)
-    # TODO associate with account
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
     account = relationship('Account', back_populates="transactions")
 

@@ -33,7 +33,7 @@ def print_transactions():
         banks = Bank.query.all()
         for bank in banks:
             # TODO create accounts by id dict
-            accounts = bank.accounts
+            accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
             access_token = bank.access_token
             start_date = '2020-07-15'
             end_date = '2020-12-15'
@@ -44,15 +44,16 @@ def print_transactions():
             transactions_data = transactions_response['transactions']
             for transaction_datum in transactions_data:
                 # TODO create a transactions class method
-                # TODO make sure the transactions are associated to the correct account using the plaid account id
                 # TODO use a try catch block if there is a uniqueness constraint on this column
                 date = transaction_datum['date']
                 description = transaction_datum['name']
                 amount = int(transaction_datum['amount']) * 100
+                account = accounts_by_id[transaction_datum['account_id']]
                 transaction = Transaction(
                                date=date,
                                description=description,
-                               amount=amount
+                               amount=amount,
+                               account=account
                                )
                 db.session.add(transaction)
                 db.session.commit()
