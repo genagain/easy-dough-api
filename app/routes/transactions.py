@@ -30,12 +30,14 @@ def transactions():
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).order_by(Transaction.date.desc()).all()
     else:
         search_clause = f"%{search_term}%"
+        # TODO order by date and then by id desc
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
 
     month_transactions = {}
     for transaction in transactions:
         month = transaction.date.strftime('%B')
         if month not in month_transactions:
+            # TODO add id to_dict()
             month_transactions[month] = [ transaction.to_dict() ]
         else:
             month_transactions[month].append(transaction.to_dict())
