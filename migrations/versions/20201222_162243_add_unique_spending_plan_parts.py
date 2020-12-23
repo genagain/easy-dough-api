@@ -1,8 +1,8 @@
-"""add_unique_spending_plan_parts
+"""add unique spending plan parts
 
-Revision ID: 7e5a6ede14cc
-Revises: 86ccb830a94f
-Create Date: 2020-12-17 18:56:42.066131
+Revision ID: 693c3a9e8811
+Revises: fb1f8028c476
+Create Date: 2020-12-22 16:22:43.128315
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7e5a6ede14cc'
-down_revision = '86ccb830a94f'
+revision = '693c3a9e8811'
+down_revision = 'fb1f8028c476'
 branch_labels = None
 depends_on = None
 
