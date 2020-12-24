@@ -22,7 +22,7 @@ def spending_plan_parts():
     savings = list(map(lambda part: part.to_dict(), savings_parts))
 
     investments_parts = SpendingPlanPart.query.filter_by(user=user, category='Investments').order_by('id').all()
-    investments = list(map(lambda part: { 'id': part.id, 'label': part.label, 'searchTerm': part.search_term, 'expectedAmount': part.expected_amount}, investments_parts))
+    investments = list(map(lambda part: part.to_dict(), investments_parts))
 
     spending_plan = { 'fixedCosts': fixed_costs, 'savings': savings, 'investments': investments, 'discretionarySpending': discretionary_spending }
 
