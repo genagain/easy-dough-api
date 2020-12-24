@@ -4,18 +4,8 @@ from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_jwt_extended import decode_token
 
 from app import db
-from app.models import User
+from app.models import User, SpendingPlanPart
 from .utils import client
-
-## TODO add a fixture to create this user before most of these tests
-    # user = User(
-            # firstname='Doe',
-            # lastname='User',
-            # email='test@test.com',
-            # password='password'
-            # )
-    # db.session.add(user)
-    # db.session.commit()
 
 def test_valid_signup(client):
     no_user =  User.query.filter_by(email='jane@test.com').first()
@@ -39,6 +29,12 @@ def test_valid_signup(client):
     assert user.lastname == body['lastname']
     assert user.email == body['email']
     assert check_password_hash(user.password, body['password'])
+
+    discretionary_spending = user.spending_plan_parts[0]
+    assert discretionary_spending.category == 'Discretionary Spending'
+    assert discretionary_spending.label == 'Spending Money'
+    assert discretionary_spending.search_term == '*'
+    assert discretionary_spending.expected_amount == 0
 
 def test_duplicate_signup(client):
     User.create(

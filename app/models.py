@@ -1,6 +1,6 @@
 import re
 from flask_bcrypt import generate_password_hash
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from app import db
 
 class User(db.Model):
@@ -11,6 +11,7 @@ class User(db.Model):
     email = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     banks = relationship('Bank', back_populates='user')
+    spending_plan_parts = relationship('SpendingPlanPart', back_populates='user')
 
     @classmethod
     def create(cls, firstname, lastname, email, password):
@@ -76,3 +77,31 @@ class Account(db.Model):
 
     def to_dict(self):
         return {'name': self.name, 'type': self.type.capitalize() }
+
+class SpendingPlanPart(db.Model):
+    __tablename__ = "spending_plan_parts"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    category = db.Column(db.String(128), nullable=False)
+    label = db.Column(db.String(255), nullable=False)
+    search_term = db.Column(db.String(255), nullable=False)
+    expected_amount = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates="spending_plan_parts")
+
+    __table_args__ = (db.Index('unique_spending_plan_parts_index', 'category', 'label', 'user_id', unique=True),)
+
+    @validates('category')
+    def validate_category(self, attribute, category):
+        if category not in ['Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending']:
+            raise ValueError("category must be one the following: 'Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending'")
+        return category
+
+    def to_dict(self):
+        dollar_amount = str(round(self.expected_amount/100, 2))
+
+        if re.match(r'^\d{0,3},{0,1}\d{0,3}\.\d$', dollar_amount):
+            formatted_dollar_amount = f'{dollar_amount}0'
+        else:
+            formatted_dollar_amount = dollar_amount
+
+        return { 'id': self.id, 'label': self.label, 'searchTerm': self.search_term, 'expectedAmount': formatted_dollar_amount}
