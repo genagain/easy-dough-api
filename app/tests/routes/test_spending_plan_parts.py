@@ -427,4 +427,32 @@ def test_spending_plan_part_add(client, login_test_user):
     assert added_spending_plan_part.expected_amount == 100000
     assert added_spending_plan_part.user == user
 
-# TODO add test for already existing spending plan part
+def test_spending_plan_part_add_duplicate(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management Company',
+            expected_amount=100000,
+            user=user
+    )
+    db.session.add(rent)
+    db.session.commit()
+
+    request_body = {
+            'category': 'Fixed Costs',
+            'label': 'Rent',
+            'search_term': 'Property Management',
+            'expected_amount': '1000.00'
+    }
+
+    response = client.post('/spending_plan_parts/create', headers={"Authorization": f"Bearer {access_token}"}, json=request_body)
+    response_body = response.get_json()
+
+    assert response.status_code == 501
+    assert response_body['message'] == 'Cannot create this spending plan part because it already exists'
+
+

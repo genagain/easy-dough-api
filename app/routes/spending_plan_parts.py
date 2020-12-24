@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from ..models import User, SpendingPlanPart
@@ -44,9 +45,13 @@ def create_spending_plan_parts():
     search_term = body['search_term']
     expected_amount = body['expected_amount'].replace('.', '')
 
-    spending_plan_part = SpendingPlanPart(category=category, label=label, search_term=search_term, expected_amount=expected_amount, user=user)
+    try:
+        spending_plan_part = SpendingPlanPart(category=category, label=label, search_term=search_term, expected_amount=expected_amount, user=user)
 
-    db.session.add(spending_plan_part)
-    db.session.commit()
+        db.session.add(spending_plan_part)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return { 'message': 'Cannot create this spending plan part because it already exists' }, 501
 
     return { 'message': 'Spending Plan Part successfully created' }, 200
