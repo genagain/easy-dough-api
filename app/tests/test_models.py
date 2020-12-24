@@ -78,18 +78,18 @@ def test_create_transaction(context):
     assert transaction.amount == 700
     assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
 
-def test_create_transaction_with_ten_cents(context):
+def test_create_transaction_with_eleven_cents(context):
     transaction = Transaction(
             date='2020-09-14',
             description='Lyft',
-            amount='710'
+            amount='711'
             )
     db.session.add(transaction)
     db.session.commit()
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
-    assert transaction.amount == 710
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.10' }
+    assert transaction.amount == 711
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.11' }
 
 def test_unique_transaction(context):
     transaction = Transaction(
@@ -265,6 +265,35 @@ def test_valid_spending_plan_part(context):
     assert spending_plan_part.search_term == '*'
     assert spending_plan_part.expected_amount == 0
     assert spending_plan_part.user == user
+    assert spending_plan_part.to_dict() == { 'id': 1, 'label': 'Spending Money', 'searchTerm': '*', 'expectedAmount': '0.00' }
+
+def test_valid_spending_plan_part_with_eleven_cents(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    spending_plan_part = SpendingPlanPart(
+            category='Discretionary Spending',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=1011,
+            user=user
+            )
+    db.session.add(spending_plan_part)
+    db.session.commit()
+
+    assert spending_plan_part.category == 'Discretionary Spending'
+    assert spending_plan_part.label == 'Spending Money'
+    assert spending_plan_part.search_term == '*'
+    assert spending_plan_part.expected_amount == 1011
+    assert spending_plan_part.user == user
+    assert spending_plan_part.to_dict() == { 'id': 1, 'label': 'Spending Money', 'searchTerm': '*', 'expectedAmount': '10.11' }
+
 
 def test_invalid_spending_plan_part(context):
     user = User(

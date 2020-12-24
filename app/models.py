@@ -95,3 +95,13 @@ class SpendingPlanPart(db.Model):
         if category not in ['Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending']:
             raise ValueError("category must be one the following: 'Fixed Costs', 'Savings', 'Investments', 'Discretionary Spending'")
         return category
+
+    def to_dict(self):
+        dollar_amount = str(round(self.expected_amount/100, 2))
+
+        if re.match(r'^\d{0,3},{0,1}\d{0,3}\.\d$', dollar_amount):
+            formatted_dollar_amount = f'{dollar_amount}0'
+        else:
+            formatted_dollar_amount = dollar_amount
+
+        return { 'id': self.id, 'label': self.label, 'searchTerm': self.search_term, 'expectedAmount': formatted_dollar_amount}
