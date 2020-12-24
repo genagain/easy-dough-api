@@ -28,7 +28,7 @@ def test_default_spending_plan_parts(client, login_test_user):
                 'id': 1,
                 'label': 'Spending Money',
                 'searchTerm': '*',
-                'expectedAmount': 0
+                'expectedAmount': '0.00'
                 }
             }
 
@@ -53,7 +53,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Rent',
             search_term='Property Management Company',
-            expected_amount=1000,
+            expected_amount=100000,
             user=user
     )
 
@@ -61,7 +61,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Electricity',
             search_term='Electic Company',
-            expected_amount=40,
+            expected_amount=4000,
             user=user
     )
 
@@ -69,7 +69,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Gas',
             search_term='Gas Company',
-            expected_amount=40,
+            expected_amount=4000,
             user=user
     )
 
@@ -77,7 +77,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Internet',
             search_term='Internet Provider',
-            expected_amount=60,
+            expected_amount=6000,
             user=user
     )
 
@@ -85,7 +85,7 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Groceries',
             search_term='Grocery Store',
-            expected_amount=300,
+            expected_amount=30000,
             user=user
     )
 
@@ -103,38 +103,38 @@ def test_fixed_costs_spending_plan_parts(client, login_test_user):
             'id': 2,
             'label': 'Rent',
             'searchTerm': 'Property Management Company',
-            'expectedAmount': 1000
+            'expectedAmount': '1000.00'
           },
           {
             'id': 3,
             'label': 'Electricity',
             'searchTerm': 'Electic Company',
-            'expectedAmount': 40
+            'expectedAmount': '40.00'
           },
           {
             'id': 4,
             'label': 'Gas',
             'searchTerm': 'Gas Company',
-            'expectedAmount': 40
+            'expectedAmount': '40.00'
           },
           {
             'id': 5,
             'label': 'Internet',
             'searchTerm': 'Internet Provider',
-            'expectedAmount': 60
+            'expectedAmount': '60.00'
           },
           {
             'id': 6,
             'label': 'Groceries',
             'searchTerm': 'Grocery Store',
-            'expectedAmount': 300
+            'expectedAmount': '300.00'
           }
         ],
         'discretionarySpending': {
           'id': 1,
           'label': 'Spending Money',
           'searchTerm': '*',
-          'expectedAmount': 0
+          'expectedAmount': '0.00'
         }
       }
 
@@ -158,7 +158,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Rent',
             search_term='Property Management Company',
-            expected_amount=1000,
+            expected_amount=100000,
             user=user
     )
 
@@ -166,7 +166,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Electricity',
             search_term='Electic Company',
-            expected_amount=40,
+            expected_amount=4000,
             user=user
     )
 
@@ -174,7 +174,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Gas',
             search_term='Gas Company',
-            expected_amount=40,
+            expected_amount=4000,
             user=user
     )
 
@@ -182,7 +182,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Internet',
             search_term='Internet Provider',
-            expected_amount=60,
+            expected_amount=6000,
             user=user
     )
 
@@ -190,7 +190,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Fixed Costs',
             label='Groceries',
             search_term='Grocery Store',
-            expected_amount=300,
+            expected_amount=30000,
             user=user
     )
 
@@ -198,7 +198,7 @@ def test_savings_spending_plan_parts(client, login_test_user):
             category='Savings',
             label='Emergency Fund',
             search_term='Employer',
-            expected_amount=800,
+            expected_amount=80000,
             user=user
     )
 
@@ -217,31 +217,31 @@ def test_savings_spending_plan_parts(client, login_test_user):
             'id': 2,
             'label': 'Rent',
             'searchTerm': 'Property Management Company',
-            'expectedAmount': 1000
+            'expectedAmount': '1000.00'
           },
           {
             'id': 3,
             'label': 'Electricity',
             'searchTerm': 'Electic Company',
-            'expectedAmount': 40
+            'expectedAmount': '40.00'
           },
           {
             'id': 4,
             'label': 'Gas',
             'searchTerm': 'Gas Company',
-            'expectedAmount': 40
+            'expectedAmount': '40.00'
           },
           {
             'id': 5,
             'label': 'Internet',
             'searchTerm': 'Internet Provider',
-            'expectedAmount': 60
+            'expectedAmount': '60.00'
           },
           {
             'id': 6,
             'label': 'Groceries',
             'searchTerm': 'Grocery Store',
-            'expectedAmount': 300
+            'expectedAmount': '300.00'
           }
         ],
         'savings': [
@@ -249,14 +249,14 @@ def test_savings_spending_plan_parts(client, login_test_user):
             'id': 7,
             'label': 'Emergency Fund',
             'searchTerm': 'Employer',
-            'expectedAmount': 800
+            'expectedAmount': '800.00'
           }
         ],
         'discretionarySpending': {
           'id': 1,
           'label': 'Spending Money',
           'searchTerm': '*',
-          'expectedAmount': 0
+          'expectedAmount': '0.00'
         }
       }
 
@@ -426,3 +426,5 @@ def test_spending_plan_part_add(client, login_test_user):
     assert added_spending_plan_part.search_term == 'Property Management'
     assert added_spending_plan_part.expected_amount == 100000
     assert added_spending_plan_part.user == user
+
+# TODO add test for already existing spending plan part
