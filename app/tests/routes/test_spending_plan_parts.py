@@ -402,3 +402,27 @@ def test_investments_spending_plan_parts(client, login_test_user):
     response = client.get('/spending_plan_parts', headers={"Authorization": f"Bearer {access_token}"})
     json_response = response.get_json()
     assert json_response['spending_plan_parts'] == expected_response
+
+def test_spending_plan_part_add(client, login_test_user):
+    access_token = login_test_user
+
+    request_body = {
+            'category': 'Fixed Costs',
+            'label': 'Rent',
+            'search_term': 'Property Management',
+            'expected_amount': '1000.00'
+    }
+
+    response = client.post('/spending_plan_parts/create', headers={"Authorization": f"Bearer {access_token}"}, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Spending Plan Part successfully created'
+
+    user = User.query.filter_by(email='john@test.com').first()
+    added_spending_plan_part = SpendingPlanPart.query.filter_by(category='Fixed Costs', label='Rent').first()
+
+    assert added_spending_plan_part.category == 'Fixed Costs'
+    assert added_spending_plan_part.label == 'Rent'
+    assert added_spending_plan_part.search_term == 'Property Management'
+    assert added_spending_plan_part.expected_amount == 100000
+    assert added_spending_plan_part.user == user

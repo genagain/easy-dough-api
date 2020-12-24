@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app import db
@@ -32,3 +32,22 @@ def spending_plan_parts():
     return { 'spending_plan_parts': dict(response) }, 200
 
 
+@bp.route('/create', methods=['POST'], strict_slashes=False)
+@jwt_required
+def create_spending_plan_parts():
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+
+    body = request.json
+
+    category = body['category']
+    label = body['label']
+    search_term = body['search_term']
+    expected_amount = body['expected_amount'].replace('.', '')
+
+    spending_plan_part = SpendingPlanPart(category=category, label=label, search_term=search_term, expected_amount=expected_amount, user=user)
+
+    db.session.add(spending_plan_part)
+    db.session.commit()
+
+    return { 'message': 'Spending Plan Part successfully created' }, 200
