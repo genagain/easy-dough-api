@@ -51,7 +51,7 @@ class Bank(db.Model):
     __tablename__ = "banks"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     # TODO consider changing this to plaid_access_token
     access_token = db.Column(db.String(255), nullable=False)
     logo = db.Column(db.Text(), nullable=False)
