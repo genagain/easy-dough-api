@@ -2,7 +2,7 @@ from datetime import date
 import pytest
 
 from app import db
-from app.models import User, Transaction
+from app.models import User, Bank, Account, Transaction
 from .utils import client, login_test_user
 
 def test_unauthorized_transactions(client):
@@ -27,16 +27,35 @@ def test_transactions_invalid_query_params(client, login_test_user):
 
 
 def test_transactions_one_month_one_transaction(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
     db.session.add(july_transaction)
     db.session.commit()
 
-    access_token = login_test_user
 
     response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -50,18 +69,37 @@ def test_transactions_one_month_one_transaction(client, login_test_user):
 
 
 def test_transactions_one_month_two_transactions(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300)
-    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account)
+    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction_one)
     db.session.add(june_transaction_two)
     db.session.add(july_transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -77,18 +115,36 @@ def test_transactions_one_month_two_transactions(client, login_test_user):
     assert response_month['transactions'] == expected_transactions
 
 def test_transactions_one_month_not_found(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300)
-    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account)
+    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction_one)
     db.session.add(june_transaction_two)
     db.session.add(july_transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.get('/transactions?start_date=2020-01-01&end_date=2020-01-31', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -97,16 +153,34 @@ def test_transactions_one_month_not_found(client, login_test_user):
 
 
 def test_transactions_no_start_date(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
     db.session.add(july_transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.get('/transactions?end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -115,16 +189,34 @@ def test_transactions_no_start_date(client, login_test_user):
 
 
 def test_transactions_no_end_date(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
     db.session.add(july_transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.get('/transactions?start_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -133,18 +225,36 @@ def test_transactions_no_end_date(client, login_test_user):
 
 
 def test_transactions_search_term_found_one_transaction(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
-    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
     db.session.add(july_not_found_transaction)
     db.session.add(july_found_transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.get('/transactions?start_date=2020-07-01&end_date=2020-07-31&search_term=pizza+del', headers={ "Authorization": f"Bearer {access_token}" })
     json_response = response.get_json()
@@ -158,11 +268,31 @@ def test_transactions_search_term_found_one_transaction(client, login_test_user)
 
 
 def test_transactions_search_term_found_two_transactions(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_found_transaction_one = Transaction(date='2020-07-01', description='Pizza Delivery', amount=1500)
-    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
-    july_found_transaction_two = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_found_transaction_one = Transaction(date='2020-07-01', description='Pizza Delivery', amount=1500, account=account)
+    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    july_found_transaction_two = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -188,9 +318,29 @@ def test_transactions_search_term_found_two_transactions(client, login_test_user
 
 
 def test_transactions_search_term_not_found(client, login_test_user):
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000)
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
