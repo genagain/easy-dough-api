@@ -37,12 +37,10 @@ def transactions():
 
     search_term = request.args.get('search_term')
     if not search_term:
-        # TODO order by date and then by id desc
-        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids)).order_by(Transaction.date.desc()).all()
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids)).order_by(Transaction.date.desc(), Transaction.id.desc()).all()
     else:
         search_clause = f"%{search_term}%"
-        # TODO order by date and then by id desc
-        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc(), Transaction.id.desc()).all()
 
     month_transactions = {}
     for transaction in transactions:
