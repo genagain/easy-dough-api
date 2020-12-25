@@ -66,10 +66,36 @@ def test_create_user_hashed_password(context):
     assert check_password_hash(user.password, 'password')
 
 def test_create_transaction(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-09-14',
             description='Lyft',
-            amount='700'
+            amount='700',
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
@@ -79,10 +105,36 @@ def test_create_transaction(context):
     assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
 
 def test_create_transaction_with_eleven_cents(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-09-14',
             description='Lyft',
-            amount='711'
+            amount='711',
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
@@ -92,10 +144,36 @@ def test_create_transaction_with_eleven_cents(context):
     assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.11' }
 
 def test_unique_transaction(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-09-14',
             description='Lyft',
-            amount='700'
+            amount='700',
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
