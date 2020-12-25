@@ -36,7 +36,7 @@ class Transaction(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
     account = relationship('Account', back_populates="transactions")
 
-    __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', unique=True),)
+    __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', 'account_id', unique=True),)
 
     def to_dict(self):
         dollar_amount = str(round(self.amount/100, 2))

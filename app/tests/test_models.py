@@ -181,11 +181,91 @@ def test_unique_transaction(context):
     transaction1 = Transaction(
             date='2020-09-14',
             description='Lyft',
-            amount='700'
+            amount='700',
+            account=account
             )
     db.session.add(transaction1)
     with pytest.raises(IntegrityError) as error:
       db.session.commit()
+
+def test_valid_two_transactions(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    other_user = User(
+            firstname='Jane',
+            lastname='Test',
+            email='jane@test.com',
+            password='password'
+            )
+    db.session.add(other_user)
+    db.session.commit()
+
+    other_bank = Bank(
+            name='Ally Bank',
+            access_token='other fake access token',
+            logo='fake logo',
+            user=other_user
+            )
+    other_account = Account(
+            plaid_account_id='other fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=other_bank
+            )
+    db.session.add(other_bank)
+    db.session.add(other_account)
+    db.session.commit()
+
+    transaction = Transaction(
+            date='2020-09-14',
+            description='Lyft',
+            amount='700',
+            account=account
+            )
+    db.session.add(transaction)
+    db.session.commit()
+
+    other_transaction = Transaction(
+            date='2020-09-14',
+            description='Lyft',
+            amount='700',
+            account=other_account
+            )
+    db.session.add(other_transaction)
+    db.session.commit()
+
+    assert transaction.date == date(2020, 9, 14)
+    assert transaction.description == 'Lyft'
+    assert transaction.amount == 700
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+
+    assert other_transaction.date == date(2020, 9, 14)
+    assert other_transaction.description == 'Lyft'
+    assert other_transaction.amount == 700
+    assert other_transaction.to_dict() == { 'id': 2, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
 
 def test_valid_bank(context):
     user = User(
