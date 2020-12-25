@@ -36,7 +36,7 @@ class Transaction(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
     account = relationship('Account', back_populates="transactions")
 
-    __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', unique=True),)
+    __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', 'account_id', unique=True),)
 
     def to_dict(self):
         dollar_amount = str(round(self.amount/100, 2))
@@ -51,7 +51,7 @@ class Bank(db.Model):
     __tablename__ = "banks"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(128), nullable=False)
     # TODO consider changing this to plaid_access_token
     access_token = db.Column(db.String(255), nullable=False)
     logo = db.Column(db.Text(), nullable=False)
