@@ -360,6 +360,24 @@ def test_transactions_add(client, login_test_user):
 
     access_token = login_test_user
 
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     request_body = {
             'date': '2020-10-04',
             'description': 'Coffee',
@@ -377,15 +395,34 @@ def test_transactions_add(client, login_test_user):
     assert added_transaction.amount == 1400
 
 def test_transactions_add_duplicate(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-10-04',
             description='Coffee',
-            amount=1400
+            amount=1400,
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     request_body = {
             'date': '2020-10-04',
@@ -445,15 +482,34 @@ def test_invalid_body_transaction_add(client, login_test_user):
         assert response.status_code == 501
 
 def test_valid_transaction_delete(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-10-04',
             description='Coffee',
-            amount=1400
+            amount=1400,
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     response = client.delete('/transactions/1', headers={ "Authorization": f"Bearer {access_token}" })
     response_body = response.get_json()
@@ -478,15 +534,34 @@ def test_invalid_transaction_delete(client, login_test_user):
     assert response.status_code == 501
 
 def test_valid_transaction_update(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-10-04',
             description='Coffee',
-            amount=1400
+            amount=1400,
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     request_body = {
             'date': '2020-10-04',
@@ -505,15 +580,34 @@ def test_valid_transaction_update(client, login_test_user):
     assert updated_transaction.amount == 400
 
 def test_invalid_body_transaction_update(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-10-04',
             description='Coffee',
-            amount=1400
+            amount=1400,
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     for attribute in ['date', 'description', 'amount']:
         invalid_body = {
@@ -547,15 +641,34 @@ def test_invalid_transaction_update(client, login_test_user):
     assert response.status_code == 501
 
 def test_invalid_format_transaction_update(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
     transaction = Transaction(
             date='2020-10-04',
             description='Coffee',
-            amount=1400
+            amount=1400,
+            account=account
             )
     db.session.add(transaction)
     db.session.commit()
-
-    access_token = login_test_user
 
     request_body = {
         'date': '2020-10-04',

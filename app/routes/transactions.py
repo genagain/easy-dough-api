@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app import db
-from ..models import Transaction
+from ..models import User, Transaction
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
@@ -57,13 +57,16 @@ def add_transaction():
         return { "message": "Invalid format: body must contain date, description and amount" }, 501
 
     current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
 
     date = body['date']
     description = body['description']
     amount = body['amount'].replace('.', '')
 
     try:
-        transaction = Transaction(date=date, description=description, amount=amount)
+        # TODO figure out a way for the user to specify which bank account they created transaction should be associated with
+        account = user.banks[0].accounts[0]
+        transaction = Transaction(date=date, description=description, amount=amount, account=account)
         db.session.add(transaction)
         db.session.commit()
     except IntegrityError:
