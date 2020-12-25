@@ -25,6 +25,72 @@ def test_transactions_invalid_query_params(client, login_test_user):
     json_response = response.get_json()
     assert json_response["message"] == 'Query parameters not found. Please provide both a start date and end date and optionally a search term in the request'
 
+def test_transactions_one_month_one_transaction_two_users(client, login_test_user):
+    other_user = User.create(firstname='Jane', lastname='', email='jane@test.com', password='test_password')
+    other_bank = Bank(
+            name='Ally Bank',
+            access_token='other fake access token',
+            logo='other fake logo',
+            user=other_user
+            )
+    other_account = Account(
+            plaid_account_id='other fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=other_bank
+            )
+    db.session.add(other_bank)
+    db.session.add(other_account)
+    db.session.commit()
+
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+
+    db.session.add(may_transaction)
+    db.session.add(june_transaction)
+    db.session.add(july_transaction)
+    db.session.commit()
+
+    other_may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=other_account)
+    other_june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=other_account)
+    other_july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=other_account)
+
+    db.session.add(other_may_transaction)
+    db.session.add(other_june_transaction)
+    db.session.add(other_july_transaction)
+    db.session.commit()
+
+    response = client.get('/transactions?start_date=2020-06-01&end_date=2020-06-30', headers={ "Authorization": f"Bearer {access_token}" })
+    json_response = response.get_json()
+
+    expected_month = 'June'
+    expected_transactions = [ { 'id': 2, 'date': '2020-06-21', 'description': 'Italian restaurant', 'amount': '27.00' } ]
+
+    response_month = json_response[0]
+    assert response_month['month'] == expected_month
+    assert response_month['transactions'] == expected_transactions
+
 
 def test_transactions_one_month_one_transaction(client, login_test_user):
     access_token = login_test_user

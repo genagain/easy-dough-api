@@ -13,6 +13,9 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 def transactions():
     ## TODO somehow only show the transactions associated with a user in the future
     current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+    # TODO get all accounts ids
+
     valid_query_parameters = ['start_date', 'end_date', 'search_term']
     extra_query_parameters = set(request.args.keys()) - set(valid_query_parameters)
 
@@ -25,11 +28,21 @@ def transactions():
     if not (start_date and end_date):
         return { 'message': 'start_date and end_date query parameters not found. Please provide both a start date and end date' }, 200
 
+    account_ids = []
+
+    for bank in user.banks:
+        accounts = bank.accounts
+        for account in accounts:
+            account_ids.append(account.id)
+
     search_term = request.args.get('search_term')
     if not search_term:
-        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).order_by(Transaction.date.desc()).all()
+        # TODO order by date and then by id desc
+        # TODO filter by account id
+        transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids)).order_by(Transaction.date.desc()).all()
     else:
         search_clause = f"%{search_term}%"
+        # TODO filter by account id and test
         # TODO order by date and then by id desc
         transactions = Transaction.query.filter(Transaction.date.between(start_date, end_date)).filter(Transaction.description.ilike(search_clause)).order_by(Transaction.date.desc()).all()
 
@@ -37,7 +50,6 @@ def transactions():
     for transaction in transactions:
         month = transaction.date.strftime('%B')
         if month not in month_transactions:
-            # TODO add id to_dict()
             month_transactions[month] = [ transaction.to_dict() ]
         else:
             month_transactions[month].append(transaction.to_dict())
