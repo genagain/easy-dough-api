@@ -43,7 +43,7 @@ def create_spending_plan_parts():
     category = body['category']
     label = body['label']
     search_term = body['search_term']
-    expected_amount = body['expected_amount'].replace('.', '')
+    expected_amount = int(body['expected_amount'].replace('.', ''))
 
     try:
         spending_plan_part = SpendingPlanPart(category=category, label=label, search_term=search_term, expected_amount=expected_amount, user=user)
@@ -55,3 +55,22 @@ def create_spending_plan_parts():
         return { 'message': 'Cannot create this spending plan part because it already exists' }, 501
 
     return { 'message': 'Spending Plan Part successfully created' }, 200
+
+
+@bp.route('/<int:spending_plan_part_id>', methods=['PUT'], strict_slashes=False)
+@jwt_required
+def update_spending_plan_part(spending_plan_part_id):
+    spending_plan_part = SpendingPlanPart.query.get(spending_plan_part_id)
+
+    body = request.json
+
+    label = body['label']
+    search_term = body['search_term']
+    expected_amount = int(body['expected_amount'].replace('.', ''))
+
+    spending_plan_part.label = label
+    spending_plan_part.search_term = search_term
+    spending_plan_part.expected_amount = expected_amount
+    db.session.commit()
+
+    return { 'message': 'Spending Plan Part successfully updated' }, 200
