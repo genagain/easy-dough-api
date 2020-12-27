@@ -68,9 +68,12 @@ def update_spending_plan_part(spending_plan_part_id):
     search_term = body['search_term']
     expected_amount = int(body['expected_amount'].replace('.', ''))
 
-    spending_plan_part.label = label
-    spending_plan_part.search_term = search_term
-    spending_plan_part.expected_amount = expected_amount
-    db.session.commit()
+    try:
+        spending_plan_part.label = label
+        spending_plan_part.search_term = search_term
+        spending_plan_part.expected_amount = expected_amount
+        db.session.commit()
 
-    return { 'message': 'Spending Plan Part successfully updated' }, 200
+        return { 'message': 'Spending Plan Part successfully updated' }, 200
+    except AttributeError:
+        return { 'message': 'Cannot update this spending plan part because it does not exist'}, 501

@@ -489,3 +489,19 @@ def test_spending_plan_part_update(client, login_test_user):
     assert updated_spending_plan_part.expected_amount == 150000
     assert updated_spending_plan_part.user == user
 
+def test_invalid_spending_plan_part_update(client, login_test_user):
+    access_token = login_test_user
+    request_body = {
+            'category': 'Fixed Costs',
+            'label': 'Rent',
+            'search_term': 'New Property Management',
+            'expected_amount': '1500.00'
+    }
+
+    response = client.put('/spending_plan_parts/1', headers={"Authorization": f"Bearer {access_token}"}, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Cannot update this spending plan part because it does not exist'
+    assert response.status_code == 501
+
+# TODO cannot delete discretionary spending spending plan part
