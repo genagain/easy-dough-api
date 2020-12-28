@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app import db
 from ..models import User, SpendingPlanPart
@@ -82,8 +83,11 @@ def update_spending_plan_part(spending_plan_part_id):
 @bp.route('/<int:spending_plan_part_id>', methods=['DELETE'], strict_slashes=False)
 @jwt_required
 def delete_spending_plan_part(spending_plan_part_id):
-    spending_plan_part = SpendingPlanPart.query.get(spending_plan_part_id)
-    db.session.delete(spending_plan_part)
-    db.session.commit()
+    try:
+        spending_plan_part = SpendingPlanPart.query.get(spending_plan_part_id)
+        db.session.delete(spending_plan_part)
+        db.session.commit()
+    except UnmappedInstanceError:
+        return { 'message': 'Cannot delete this spending plan part because it does not exist' }, 501
 
     return { 'message': 'Spending Plan Part successfully deleted' }, 200

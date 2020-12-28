@@ -527,4 +527,16 @@ def test_valid_spending_plan_part_delete(client, login_test_user):
     assert message == "Spending Plan Part successfully deleted"
     assert response.status_code == 200
 
-# TODO cannot delete discretionary spending spending plan part
+    deleted_spending_plan_part = SpendingPlanPart.query(category='Fixed Costs', label='Rent').first()
+    assert deleted_spending_plan_part == None
+
+def test_invalid_spending_plan_part_delete(client, login_test_user):
+    access_token = login_test_user
+
+    response = client.delete('/spending_plan_parts/1', headers={ "Authorization": f"Bearer {access_token}" })
+    response_body = response.get_json()
+
+    message = response_body['message']
+
+    assert message == "Cannot delete this spending plan part because it does not exist"
+    assert response.status_code == 501
