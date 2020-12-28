@@ -92,6 +92,7 @@ class SpendingPlanPart(db.Model):
     user = relationship('User', back_populates="spending_plan_parts")
     transactions = relationship('Transaction', cascade="all,delete-orphan", back_populates="spending_plan_part")
 
+    # TODO consider dropping the category as part of the index
     __table_args__ = (db.Index('unique_spending_plan_parts_index', 'category', 'label', 'user_id', unique=True),)
 
     @validates('category')

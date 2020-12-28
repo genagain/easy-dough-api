@@ -27,6 +27,17 @@ def test_transactions_invalid_query_params(client, login_test_user):
 
 def test_transactions_one_month_one_transaction_two_users(client, login_test_user):
     other_user = User.create(firstname='Jane', lastname='', email='jane@test.com', password='test_password')
+
+    other_discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=other_user
+            )
+    db.session.add(other_discretionary_spending)
+    db.session.commit()
+
     other_bank = Bank(
             name='Ally Bank',
             access_token='other fake access token',
@@ -47,6 +58,16 @@ def test_transactions_one_month_one_transaction_two_users(client, login_test_use
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -63,18 +84,18 @@ def test_transactions_one_month_one_transaction_two_users(client, login_test_use
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
     db.session.add(july_transaction)
     db.session.commit()
 
-    other_may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=other_account)
-    other_june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=other_account)
-    other_july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=other_account)
+    other_may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=other_account, spending_plan_part=other_discretionary_spending)
+    other_june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=other_account, spending_plan_part=other_discretionary_spending)
+    other_july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=other_account, spending_plan_part=other_discretionary_spending)
 
     db.session.add(other_may_transaction)
     db.session.add(other_june_transaction)
@@ -97,6 +118,16 @@ def test_transactions_one_month_one_transaction(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -113,9 +144,9 @@ def test_transactions_one_month_one_transaction(client, login_test_user):
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -139,6 +170,16 @@ def test_transactions_one_month_two_transactions(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -156,10 +197,10 @@ def test_transactions_one_month_two_transactions(client, login_test_user):
     db.session.commit()
 
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account)
-    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction_one)
@@ -185,6 +226,16 @@ def test_transactions_one_month_not_found(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -201,10 +252,10 @@ def test_transactions_one_month_not_found(client, login_test_user):
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account)
-    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_one = Transaction(date='2020-06-09', description='Japanese restaurant', amount=2300, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_two = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction_one)
@@ -223,6 +274,16 @@ def test_transactions_no_start_date(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -239,9 +300,9 @@ def test_transactions_no_start_date(client, login_test_user):
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -259,6 +320,16 @@ def test_transactions_no_end_date(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -275,9 +346,9 @@ def test_transactions_no_end_date(client, login_test_user):
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -291,6 +362,17 @@ def test_transactions_no_end_date(client, login_test_user):
 
 def test_transactions_search_term_found_one_transaction_two_users(client, login_test_user):
     other_user = User.create(firstname='Jane', lastname='', email='jane@test.com', password='test_password')
+
+    other_discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=other_user
+            )
+    db.session.add(other_discretionary_spending)
+    db.session.commit()
+
     other_bank = Bank(
             name='Ally Bank',
             access_token='other fake access token',
@@ -311,6 +393,16 @@ def test_transactions_search_term_found_one_transaction_two_users(client, login_
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -327,10 +419,10 @@ def test_transactions_search_term_found_one_transaction_two_users(client, login_
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
-    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
+    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -338,10 +430,10 @@ def test_transactions_search_term_found_one_transaction_two_users(client, login_
     db.session.add(july_found_transaction)
     db.session.commit()
 
-    other_may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=other_account)
-    other_june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=other_account)
-    other_july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=other_account)
-    other_july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=other_account)
+    other_may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=other_account, spending_plan_part=other_discretionary_spending)
+    other_june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=other_account, spending_plan_part=other_discretionary_spending)
+    other_july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=other_account, spending_plan_part=other_discretionary_spending)
+    other_july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=other_account, spending_plan_part=other_discretionary_spending)
 
     db.session.add(other_may_transaction)
     db.session.add(other_june_transaction)
@@ -365,6 +457,16 @@ def test_transactions_search_term_found_one_transaction(client, login_test_user)
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -381,10 +483,10 @@ def test_transactions_search_term_found_one_transaction(client, login_test_user)
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
-    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
+    july_found_transaction = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -408,6 +510,16 @@ def test_transactions_search_term_found_two_transactions(client, login_test_user
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -424,11 +536,11 @@ def test_transactions_search_term_found_two_transactions(client, login_test_user
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_found_transaction_one = Transaction(date='2020-07-01', description='Pizza Delivery', amount=1500, account=account)
-    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
-    july_found_transaction_two = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_found_transaction_one = Transaction(date='2020-07-01', description='Pizza Delivery', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    july_not_found_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
+    july_found_transaction_two = Transaction(date='2020-07-21', description='Pizza Delivery', amount=2000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
@@ -458,6 +570,16 @@ def test_transactions_search_term_not_found(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -474,9 +596,9 @@ def test_transactions_search_term_not_found(client, login_test_user):
     db.session.add(account)
     db.session.commit()
 
-    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account)
-    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account)
-    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account)
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction = Transaction(date='2020-06-21', description='Italian restaurant', amount=2700, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
 
     db.session.add(may_transaction)
     db.session.add(june_transaction)
