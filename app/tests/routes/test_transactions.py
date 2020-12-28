@@ -2,7 +2,7 @@ from datetime import date
 import pytest
 
 from app import db
-from app.models import User, Bank, Account, Transaction
+from app.models import User, Bank, Account, Transaction, SpendingPlanPart
 from .utils import client, login_test_user
 
 def test_unauthorized_transactions(client):
@@ -622,6 +622,16 @@ def test_valid_transaction_delete(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -642,7 +652,8 @@ def test_valid_transaction_delete(client, login_test_user):
             date='2020-10-04',
             description='Coffee',
             amount=1400,
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
