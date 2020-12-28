@@ -527,7 +527,7 @@ def test_valid_spending_plan_part_delete(client, login_test_user):
     assert message == "Spending Plan Part successfully deleted"
     assert response.status_code == 200
 
-    deleted_spending_plan_part = SpendingPlanPart.query(category='Fixed Costs', label='Rent').first()
+    deleted_spending_plan_part = SpendingPlanPart.query.filter_by(category='Fixed Costs', label='Rent').first()
     assert deleted_spending_plan_part == None
 
 def test_invalid_spending_plan_part_delete(client, login_test_user):
