@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from plaid import Client
 
 from app import create_app, db, scheduler, plaid_client
-from app.models import User, Bank, Transaction
+from app.models import User, Bank, Transaction, SpendingPlanPart
 
 
 app = create_app()
@@ -43,6 +43,8 @@ def print_transactions():
             # end_date = '{:%Y-%m-%d}'.format(datetime.now())
             transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
             transactions_data = transactions_response['transactions']
+            user = bank.user
+            discretionary_spending = SpendingPlanPart.query.filter_by(category="Discretionary Spending", user=user).first()
             for transaction_datum in transactions_data:
                 # TODO create a transactions class method
                 try:
@@ -54,7 +56,8 @@ def print_transactions():
                                    date=date,
                                    description=description,
                                    amount=amount,
-                                   account=account
+                                   account=account,
+                                   spending_plan_part=discretionary_spending
                                    )
                     db.session.add(transaction)
                     db.session.commit()
