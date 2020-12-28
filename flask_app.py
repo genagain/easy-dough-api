@@ -64,6 +64,12 @@ def print_transactions():
                 except IntegrityError:
                     db.session.rollback()
 
+        users = User.query.all()
+        for user in users:
+            start_date = '2020-07-15'
+            end_date = '2020-12-15'
+            user.categorize_transactions(start_date, end_date)
+
 
 scheduler.add_job(add_user, 'cron', hour=1)
 scheduler.add_job(print_transactions, 'cron', hour=2)

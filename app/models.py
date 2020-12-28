@@ -38,6 +38,7 @@ class User(db.Model):
             search_clause = f"%{part.search_term}%"
             Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids), Transaction.description.ilike(search_clause))\
                              .update({ Transaction.spending_plan_part_id: part.id }, synchronize_session=False)
+            db.session.commit()
 
 
 

@@ -167,10 +167,15 @@ def test_user_categorize_transactions(context):
 
     user.categorize_transactions('2020-09-01', '2020-09-02')
 
-    assert transaction_1.spending_plan_part == discretionary_spending
-    assert transaction_2.spending_plan_part == rent
-    assert transaction_3.spending_plan_part == emergency_fund
-    assert transaction_4.spending_plan_part == stocks
+    updated_transaction_1 = Transaction.query.filter_by(date='2020-09-01', description='Lyft').first()
+    updated_transaction_2 = Transaction.query.filter_by(date='2020-09-01', description='PROPERTY MANAGEMENT').first()
+    updated_transaction_3 = Transaction.query.filter_by(date='2020-09-01', description='EMPLOYER').first()
+    updated_transaction_4 = Transaction.query.filter_by(date='2020-09-01', description='BROKERAGE').first()
+
+    assert updated_transaction_1.spending_plan_part == discretionary_spending
+    assert updated_transaction_2.spending_plan_part == rent
+    assert updated_transaction_3.spending_plan_part == emergency_fund
+    assert updated_transaction_4.spending_plan_part == stocks
 
 def test_create_transaction(context):
     user = User(
