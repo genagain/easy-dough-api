@@ -9,7 +9,6 @@ def test_unauthorized_spending_plan_parts(client):
     json_response = response.get_json()
     assert json_response['msg'] == 'Missing Authorization Header'
 
-# TODO make sure the default spending part is added when the user signs up
 def test_default_spending_plan_parts(client, login_test_user):
     access_token = login_test_user
 
@@ -455,4 +454,89 @@ def test_spending_plan_part_add_duplicate(client, login_test_user):
     assert response.status_code == 501
     assert response_body['message'] == 'Cannot create this spending plan part because it already exists'
 
+def test_spending_plan_part_update(client, login_test_user):
+    access_token = login_test_user
 
+    user = User.query.filter_by(email='john@test.com').first()
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management Company',
+            expected_amount=100000,
+            user=user
+    )
+    db.session.add(rent)
+    db.session.commit()
+
+    request_body = {
+            'category': 'Fixed Costs',
+            'label': 'Rent',
+            'search_term': 'New Property Management',
+            'expected_amount': '1500.00'
+    }
+
+    response = client.put('/spending_plan_parts/1', headers={"Authorization": f"Bearer {access_token}"}, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Spending Plan Part successfully updated'
+
+    updated_spending_plan_part = SpendingPlanPart.query.get(1)
+
+    assert updated_spending_plan_part.category == 'Fixed Costs'
+    assert updated_spending_plan_part.label == 'Rent'
+    assert updated_spending_plan_part.search_term == 'New Property Management'
+    assert updated_spending_plan_part.expected_amount == 150000
+    assert updated_spending_plan_part.user == user
+
+def test_invalid_spending_plan_part_update(client, login_test_user):
+    access_token = login_test_user
+    request_body = {
+            'category': 'Fixed Costs',
+            'label': 'Rent',
+            'search_term': 'New Property Management',
+            'expected_amount': '1500.00'
+    }
+
+    response = client.put('/spending_plan_parts/1', headers={"Authorization": f"Bearer {access_token}"}, json=request_body)
+    response_body = response.get_json()
+
+    assert response_body['message'] == 'Cannot update this spending plan part because it does not exist'
+    assert response.status_code == 501
+
+def test_valid_spending_plan_part_delete(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management Company',
+            expected_amount=100000,
+            user=user
+    )
+    db.session.add(rent)
+    db.session.commit()
+
+    response = client.delete('/spending_plan_parts/1', headers={ "Authorization": f"Bearer {access_token}" })
+    response_body = response.get_json()
+
+    message = response_body['message']
+
+    assert message == "Spending Plan Part successfully deleted"
+    assert response.status_code == 200
+
+    deleted_spending_plan_part = SpendingPlanPart.query(category='Fixed Costs', label='Rent').first()
+    assert deleted_spending_plan_part == None
+
+def test_invalid_spending_plan_part_delete(client, login_test_user):
+    access_token = login_test_user
+
+    response = client.delete('/spending_plan_parts/1', headers={ "Authorization": f"Bearer {access_token}" })
+    response_body = response.get_json()
+
+    message = response_body['message']
+
+    assert message == "Cannot delete this spending plan part because it does not exist"
+    assert response.status_code == 501

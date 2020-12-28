@@ -81,7 +81,7 @@ def add_transaction():
 
     return { 'message': 'Transaction successfully created' }, 200
 
-@bp.route('/<int:transaction_id>', methods=['delete'], strict_slashes=False)
+@bp.route('/<int:transaction_id>', methods=['DELETE'], strict_slashes=False)
 @jwt_required
 def delete_transaction(transaction_id):
     try:
@@ -93,7 +93,7 @@ def delete_transaction(transaction_id):
 
     return { 'message': 'Transaction successfully deleted' }, 200
 
-@bp.route('/<int:transaction_id>', methods=['put'], strict_slashes=False)
+@bp.route('/<int:transaction_id>', methods=['PUT'], strict_slashes=False)
 @jwt_required
 def update_transaction(transaction_id):
     if request.mimetype != 'application/json':
