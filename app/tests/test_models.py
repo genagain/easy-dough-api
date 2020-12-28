@@ -75,6 +75,16 @@ def test_create_transaction(context):
     db.session.add(user)
     db.session.commit()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -95,7 +105,8 @@ def test_create_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -112,6 +123,16 @@ def test_create_transaction_with_eleven_cents(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -134,7 +155,8 @@ def test_create_transaction_with_eleven_cents(context):
             date='2020-09-14',
             description='Lyft',
             amount='711',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -151,6 +173,16 @@ def test_unique_transaction(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -173,7 +205,8 @@ def test_unique_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -182,7 +215,8 @@ def test_unique_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction1)
     with pytest.raises(IntegrityError) as error:
@@ -196,6 +230,16 @@ def test_valid_two_transactions(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -243,7 +287,8 @@ def test_valid_two_transactions(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -252,7 +297,8 @@ def test_valid_two_transactions(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=other_account
+            account=other_account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(other_transaction)
     db.session.commit()
