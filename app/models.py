@@ -35,6 +35,8 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer(), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
     account = relationship('Account', back_populates="transactions")
+    spending_plan_part_id = db.Column(db.Integer, db.ForeignKey('spending_plan_parts.id'), nullable=False)
+    spending_plan_part = relationship('SpendingPlanParts', back_populates="transactions")
 
     __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', 'account_id', unique=True),)
 
@@ -45,6 +47,7 @@ class Transaction(db.Model):
         else:
             formatted_dollar_amount = dollar_amount
 
+        # TODO add spending plan part label here
         return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }
 
 class Bank(db.Model):
@@ -87,6 +90,7 @@ class SpendingPlanPart(db.Model):
     expected_amount = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates="spending_plan_parts")
+    spending_plan_parts = relationship('Transaction', cascade="all,delete-orphan", back_populates="spending_plan_part")
 
     __table_args__ = (db.Index('unique_spending_plan_parts_index', 'category', 'label', 'user_id', unique=True),)
 
