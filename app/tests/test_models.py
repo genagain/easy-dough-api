@@ -65,6 +65,113 @@ def test_create_user_hashed_password(context):
     assert user.email == 'john@test.com'
     assert check_password_hash(user.password, 'password')
 
+def test_user_categorize_transactions(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management',
+            expected_amount= 1000,
+            user=user
+            )
+    db.session.add(rent)
+    db.session.commit()
+
+    emergency_fund = SpendingPlanPart(
+            category='Savings',
+            label='Emergency Fund',
+            search_term='Employer',
+            expected_amount= 800,
+            user=user
+            )
+    db.session.add(emergency_fund)
+    db.session.commit()
+
+    stocks = SpendingPlanPart(
+            category='Investments',
+            label='Stocks',
+            search_term='Brokerage',
+            expected_amount= 600,
+            user=user
+            )
+    db.session.add(stocks)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    transaction_1 = Transaction(
+            date='2020-09-01',
+            description='Lyft',
+            amount='700',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_2 = Transaction(
+            date='2020-09-01',
+            description='PROPERTY MANAGEMENT',
+            amount='1000',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_3 = Transaction(
+            date='2020-09-01',
+            description='EMPLOYER',
+            amount='800',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_4 = Transaction(
+            date='2020-09-01',
+            description='BROKERAGE',
+            amount='800',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    db.session.add(transaction_1)
+    db.session.add(transaction_2)
+    db.session.add(transaction_3)
+    db.session.add(transaction_4)
+    db.session.commit()
+
+    user.categorize_transactions('2020-09-01', '2020-09-02')
+
+    assert transaction_1.spending_plan_part == discretionary_spending
+    assert transaction_2.spending_plan_part == rent
+    assert transaction_3.spending_plan_part == emergency_fund
+    assert transaction_4.spending_plan_part == stocks
+
 def test_create_transaction(context):
     user = User(
             firstname='John',

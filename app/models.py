@@ -26,6 +26,20 @@ class User(db.Model):
         db.session.commit()
         return user
 
+    def categorize_transactions(self, start_date, end_date):
+        account_ids = []
+
+        for bank in self.banks:
+            accounts = bank.accounts
+            for account in accounts:
+                account_ids.append(account.id)
+
+        for part in self.spending_plan_parts:
+            search_clause = f"%{part.search_term}%"
+            Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids), Transaction.description.ilike(search_clause))\
+                             .update({ Transaction.spending_plan_part_id: part.id }, synchronize_session=False)
+
+
 
 class Transaction(db.Model):
     __tablename__ = "transactions"
