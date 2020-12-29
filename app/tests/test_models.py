@@ -225,7 +225,7 @@ def test_create_transaction(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
 def test_create_transaction_with_eleven_cents(context):
     user = User(
@@ -275,7 +275,7 @@ def test_create_transaction_with_eleven_cents(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 711
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.11' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.11' }
 
 def test_unique_transaction(context):
     user = User(
@@ -418,12 +418,12 @@ def test_valid_two_transactions(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
     assert other_transaction.date == date(2020, 9, 14)
     assert other_transaction.description == 'Lyft'
     assert other_transaction.amount == 700
-    assert other_transaction.to_dict() == { 'id': 2, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert other_transaction.to_dict() == { 'id': 2, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
 def test_valid_bank(context):
     user = User(

@@ -63,7 +63,7 @@ class Transaction(db.Model):
             formatted_dollar_amount = dollar_amount
 
         # TODO add spending plan part label here
-        return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }
+        return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'label': self.spending_plan_part.label, 'amount': formatted_dollar_amount }
 
 class Bank(db.Model):
     __tablename__ = "banks"
