@@ -101,21 +101,27 @@ def update_transaction(transaction_id):
     if request.mimetype != 'application/json':
         return { "message": "Invalid format: body must be JSON" }, 501
 
+    current_user_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_user_email).first()
+
     transaction = Transaction.query.get(transaction_id)
     body = request.json
 
-    required_fields =  ['date', 'description', 'amount']
+    required_fields =  ['date', 'description', 'amount', 'label']
     if not set(body.keys()) == set(required_fields):
         return { "message": "Invalid format: body must contain date, description and amount" }, 501
 
     date = body['date']
     description = body['description']
+    label = body['label']
     amount = int(body['amount'].replace('.', ''))
 
     try:
+        spending_plan_part = SpendingPlanPart.query.filter_by(label=label, user=user).first()
         transaction.date = date
         transaction.description = description
         transaction.amount = amount
+        transaction.spending_plan_part = spending_plan_part
         db.session.commit()
 
         return { 'message': 'Transaction successfully updated' }, 200

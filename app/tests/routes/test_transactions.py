@@ -831,6 +831,27 @@ def test_valid_transaction_update(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
+    groceries = SpendingPlanPart(
+            category = 'Fixed Costs',
+            label = 'Groceries',
+            search_term = 'Grocery Store',
+            expected_amount = 400,
+            user=user
+            )
+    db.session.add(groceries)
+    db.session.commit()
+
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -851,7 +872,8 @@ def test_valid_transaction_update(client, login_test_user):
             date='2020-10-04',
             description='Coffee',
             amount=1400,
-            account=account
+            account=account,
+            spending_plan_part= discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -859,6 +881,7 @@ def test_valid_transaction_update(client, login_test_user):
     request_body = {
             'date': '2020-10-04',
             'description': 'Coffee',
+            'label': 'Groceries',
             'amount': '4.00'
     }
 
@@ -871,6 +894,7 @@ def test_valid_transaction_update(client, login_test_user):
     assert updated_transaction.date == date(2020, 10, 4)
     assert updated_transaction.description == 'Coffee'
     assert updated_transaction.amount == 400
+    assert updated_transaction.spending_plan_part == groceries
 
 def test_invalid_body_transaction_update(client, login_test_user):
     access_token = login_test_user
