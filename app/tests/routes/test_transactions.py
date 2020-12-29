@@ -620,6 +620,16 @@ def test_transactions_add(client, login_test_user):
 
     user = User.query.filter_by(email='john@test.com').first()
 
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
     bank = Bank(
             name='Ally Bank',
             access_token='fake access token',
@@ -639,6 +649,7 @@ def test_transactions_add(client, login_test_user):
     request_body = {
             'date': '2020-10-04',
             'description': 'Coffee',
+            'label': 'Spending Money',
             'amount': '14.00'
     }
 
@@ -651,6 +662,7 @@ def test_transactions_add(client, login_test_user):
     assert added_transaction.date == date(2020, 10, 4)
     assert added_transaction.description == 'Coffee'
     assert added_transaction.amount == 1400
+    assert added_transaction.spending_plan_part == discretionary_spending
 
 def test_transactions_add_duplicate(client, login_test_user):
     access_token = login_test_user
