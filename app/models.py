@@ -26,6 +26,21 @@ class User(db.Model):
         db.session.commit()
         return user
 
+    def categorize_transactions(self, start_date, end_date):
+        account_ids = []
+
+        for bank in self.banks:
+            accounts = bank.accounts
+            for account in accounts:
+                account_ids.append(account.id)
+
+        for part in self.spending_plan_parts:
+            search_clause = f"%{part.search_term}%"
+            Transaction.query.filter(Transaction.date.between(start_date, end_date), Transaction.account_id.in_(account_ids), Transaction.description.ilike(search_clause))\
+                             .update({ Transaction.spending_plan_part_id: part.id }, synchronize_session=False)
+            db.session.commit()
+
+
 
 class Transaction(db.Model):
     __tablename__ = "transactions"
@@ -35,6 +50,8 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer(), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
     account = relationship('Account', back_populates="transactions")
+    spending_plan_part_id = db.Column(db.Integer, db.ForeignKey('spending_plan_parts.id'), nullable=False)
+    spending_plan_part = relationship('SpendingPlanPart', back_populates="transactions")
 
     __table_args__ = (db.Index('unique_transaction_index', 'date', 'description', 'amount', 'account_id', unique=True),)
 
@@ -45,7 +62,7 @@ class Transaction(db.Model):
         else:
             formatted_dollar_amount = dollar_amount
 
-        return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'amount': formatted_dollar_amount }
+        return { 'id': self.id, 'date': self.date.strftime('%Y-%m-%d'), 'description': self.description, 'label': self.spending_plan_part.label, 'amount': formatted_dollar_amount }
 
 class Bank(db.Model):
     __tablename__ = "banks"
@@ -87,8 +104,9 @@ class SpendingPlanPart(db.Model):
     expected_amount = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates="spending_plan_parts")
+    transactions = relationship('Transaction', cascade="all,delete-orphan", back_populates="spending_plan_part")
 
-    __table_args__ = (db.Index('unique_spending_plan_parts_index', 'category', 'label', 'user_id', unique=True),)
+    __table_args__ = (db.Index('unique_spending_plan_parts_index', 'label', 'user_id', unique=True),)
 
     @validates('category')
     def validate_category(self, attribute, category):

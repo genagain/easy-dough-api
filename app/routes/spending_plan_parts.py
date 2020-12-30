@@ -14,23 +14,32 @@ def spending_plan_parts():
     current_user_email = get_jwt_identity()
     user = User.query.filter_by(email=current_user_email).first()
 
+    field = request.args.get('field')
+
     discretionary_spending_part = SpendingPlanPart.query.filter_by(user=user, category='Discretionary Spending').first()
-    discretionary_spending = discretionary_spending_part.to_dict()
-
     fixed_costs_parts = SpendingPlanPart.query.filter_by(user=user, category='Fixed Costs').order_by('id').all()
-    fixed_costs = list(map(lambda part: part.to_dict(), fixed_costs_parts))
-
     savings_parts = SpendingPlanPart.query.filter_by(user=user, category='Savings').order_by('id').all()
-    savings = list(map(lambda part: part.to_dict(), savings_parts))
-
     investments_parts = SpendingPlanPart.query.filter_by(user=user, category='Investments').order_by('id').all()
-    investments = list(map(lambda part: part.to_dict(), investments_parts))
 
-    spending_plan = { 'fixedCosts': fixed_costs, 'savings': savings, 'investments': investments, 'discretionarySpending': discretionary_spending }
+    if field == 'label':
+        labels = []
+        for category in [fixed_costs_parts, savings_parts, investments_parts]:
+            for part in category:
+                labels.append(part.label)
 
-    response = [(category, parts) for category, parts in spending_plan.items() if parts != []]
+        labels.append(discretionary_spending_part.label)
+        return { 'spending_plan_part_labels': labels }, 200
+    else:
+        discretionary_spending = discretionary_spending_part.to_dict()
+        fixed_costs = list(map(lambda part: part.to_dict(), fixed_costs_parts))
+        savings = list(map(lambda part: part.to_dict(), savings_parts))
+        investments = list(map(lambda part: part.to_dict(), investments_parts))
 
-    return { 'spending_plan_parts': dict(response) }, 200
+        spending_plan = { 'fixedCosts': fixed_costs, 'savings': savings, 'investments': investments, 'discretionarySpending': discretionary_spending }
+
+        response = [(category, parts) for category, parts in spending_plan.items() if parts != []]
+
+        return { 'spending_plan_parts': dict(response) }, 200
 
 
 @bp.route('/create', methods=['POST'], strict_slashes=False)

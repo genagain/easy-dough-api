@@ -65,6 +65,118 @@ def test_create_user_hashed_password(context):
     assert user.email == 'john@test.com'
     assert check_password_hash(user.password, 'password')
 
+def test_user_categorize_transactions(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
+    db.session.commit()
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management',
+            expected_amount= 1000,
+            user=user
+            )
+    db.session.add(rent)
+    db.session.commit()
+
+    emergency_fund = SpendingPlanPart(
+            category='Savings',
+            label='Emergency Fund',
+            search_term='Employer',
+            expected_amount= 800,
+            user=user
+            )
+    db.session.add(emergency_fund)
+    db.session.commit()
+
+    stocks = SpendingPlanPart(
+            category='Investments',
+            label='Stocks',
+            search_term='Brokerage',
+            expected_amount= 600,
+            user=user
+            )
+    db.session.add(stocks)
+    db.session.commit()
+
+    bank = Bank(
+            name='Ally Bank',
+            access_token='fake access token',
+            logo='fake logo',
+            user=user
+            )
+    account = Account(
+            plaid_account_id='fake account id',
+            name='Checking Account',
+            type='checking',
+            bank=bank
+            )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    transaction_1 = Transaction(
+            date='2020-09-01',
+            description='Lyft',
+            amount='700',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_2 = Transaction(
+            date='2020-09-01',
+            description='PROPERTY MANAGEMENT',
+            amount='1000',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_3 = Transaction(
+            date='2020-09-01',
+            description='EMPLOYER',
+            amount='800',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    transaction_4 = Transaction(
+            date='2020-09-01',
+            description='BROKERAGE',
+            amount='800',
+            account=account,
+            spending_plan_part=discretionary_spending
+            )
+    db.session.add(transaction_1)
+    db.session.add(transaction_2)
+    db.session.add(transaction_3)
+    db.session.add(transaction_4)
+    db.session.commit()
+
+    user.categorize_transactions('2020-09-01', '2020-09-02')
+
+    updated_transaction_1 = Transaction.query.filter_by(date='2020-09-01', description='Lyft').first()
+    updated_transaction_2 = Transaction.query.filter_by(date='2020-09-01', description='PROPERTY MANAGEMENT').first()
+    updated_transaction_3 = Transaction.query.filter_by(date='2020-09-01', description='EMPLOYER').first()
+    updated_transaction_4 = Transaction.query.filter_by(date='2020-09-01', description='BROKERAGE').first()
+
+    assert updated_transaction_1.spending_plan_part == discretionary_spending
+    assert updated_transaction_2.spending_plan_part == rent
+    assert updated_transaction_3.spending_plan_part == emergency_fund
+    assert updated_transaction_4.spending_plan_part == stocks
+
 def test_create_transaction(context):
     user = User(
             firstname='John',
@@ -73,6 +185,16 @@ def test_create_transaction(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -95,14 +217,15 @@ def test_create_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
 def test_create_transaction_with_eleven_cents(context):
     user = User(
@@ -112,6 +235,16 @@ def test_create_transaction_with_eleven_cents(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -134,14 +267,15 @@ def test_create_transaction_with_eleven_cents(context):
             date='2020-09-14',
             description='Lyft',
             amount='711',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 711
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.11' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.11' }
 
 def test_unique_transaction(context):
     user = User(
@@ -151,6 +285,16 @@ def test_unique_transaction(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -173,7 +317,8 @@ def test_unique_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -182,7 +327,8 @@ def test_unique_transaction(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction1)
     with pytest.raises(IntegrityError) as error:
@@ -196,6 +342,16 @@ def test_valid_two_transactions(context):
             password='password'
             )
     db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+            category = 'Discretionary Spending',
+            label = 'Spending Money',
+            search_term = '*',
+            expected_amount = 0,
+            user=user
+            )
+    db.session.add(discretionary_spending)
     db.session.commit()
 
     bank = Bank(
@@ -243,7 +399,8 @@ def test_valid_two_transactions(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=account
+            account=account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(transaction)
     db.session.commit()
@@ -252,7 +409,8 @@ def test_valid_two_transactions(context):
             date='2020-09-14',
             description='Lyft',
             amount='700',
-            account=other_account
+            account=other_account,
+            spending_plan_part=discretionary_spending
             )
     db.session.add(other_transaction)
     db.session.commit()
@@ -260,12 +418,12 @@ def test_valid_two_transactions(context):
     assert transaction.date == date(2020, 9, 14)
     assert transaction.description == 'Lyft'
     assert transaction.amount == 700
-    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert transaction.to_dict() == { 'id': 1, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
     assert other_transaction.date == date(2020, 9, 14)
     assert other_transaction.description == 'Lyft'
     assert other_transaction.amount == 700
-    assert other_transaction.to_dict() == { 'id': 2, 'date': '2020-09-14', 'description': 'Lyft', 'amount': '7.00' }
+    assert other_transaction.to_dict() == { 'id': 2, 'date': '2020-09-14', 'description': 'Lyft', 'label': 'Spending Money', 'amount': '7.00' }
 
 def test_valid_bank(context):
     user = User(
