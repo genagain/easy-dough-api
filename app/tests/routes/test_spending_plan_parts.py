@@ -402,6 +402,99 @@ def test_investments_spending_plan_parts(client, login_test_user):
     json_response = response.get_json()
     assert json_response['spending_plan_parts'] == expected_response
 
+def test_spending_plan_part_labels(client, login_test_user):
+    access_token = login_test_user
+
+    user = User.query.filter_by(email='john@test.com').first()
+    discretionary_spending = SpendingPlanPart(
+            category='Discretionary Spending',
+            label='Spending Money',
+            search_term='*',
+            expected_amount=0,
+            user=user
+            )
+
+    rent = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Rent',
+            search_term='Property Management Company',
+            expected_amount=100000,
+            user=user
+    )
+
+    electricity = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Electricity',
+            search_term='Electic Company',
+            expected_amount=4000,
+            user=user
+    )
+
+    gas = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Gas',
+            search_term='Gas Company',
+            expected_amount=4000,
+            user=user
+    )
+
+    internet = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Internet',
+            search_term='Internet Provider',
+            expected_amount=6000,
+            user=user
+    )
+
+    groceries = SpendingPlanPart(
+            category='Fixed Costs',
+            label='Groceries',
+            search_term='Grocery Store',
+            expected_amount=30000,
+            user=user
+    )
+
+    savings = SpendingPlanPart(
+            category='Savings',
+            label='Emergency Fund',
+            search_term='Employer',
+            expected_amount=80000,
+            user=user
+    )
+
+    investments = SpendingPlanPart(
+            category='Investments',
+            label='Index Fund',
+            search_term='Brokerage Firm',
+            expected_amount=70000,
+            user=user
+    )
+
+    db.session.add(discretionary_spending)
+    db.session.add(rent)
+    db.session.add(electricity)
+    db.session.add(gas)
+    db.session.add(internet)
+    db.session.add(groceries)
+    db.session.add(savings)
+    db.session.add(investments)
+    db.session.commit()
+
+    expected_response = [
+            'Rent',
+            'Electricity',
+            'Gas',
+            'Internet',
+            'Groceries',
+            'Emergency Fund',
+            'Index Fund',
+            'Spending Money'
+    ]
+
+    response = client.get('/spending_plan_parts?field=label', headers={"Authorization": f"Bearer {access_token}"})
+    json_response = response.get_json()
+    assert json_response['spending_plan_part_labels'] == expected_response
+
 def test_spending_plan_part_add(client, login_test_user):
     access_token = login_test_user
 
