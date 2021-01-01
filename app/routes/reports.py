@@ -40,8 +40,8 @@ def generate():
         for part in category:
             actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
             label = part.label
-            actual_amount = actual_amount_cents / 100
-            expected_amount = part.expected_amount
+            actual_amount = actual_amount_cents / 100 if actual_amount_cents else 0
+            expected_amount = part.expected_amount / 100
             difference = round(abs(expected_amount - actual_amount), 2)
             row = {
                     'label': label,
@@ -55,7 +55,7 @@ def generate():
     actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
     label = part.label
     actual_amount = actual_amount_cents / 100
-    expected_amount = part.expected_amount
+    expected_amount = part.expected_amount / 100
     difference = round(abs(expected_amount - actual_amount), 2)
     row = {
         'label': label,
