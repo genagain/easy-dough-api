@@ -28,44 +28,19 @@ def generate():
     user = User.query.filter_by(email=current_user_email).first()
 
     month_name = request.args.get('month')
-    month_date = datetime.strptime(month_name, "%B")
 
     discretionary_spending_part = SpendingPlanPart.query.filter_by(user=user, category='Discretionary Spending').first()
     fixed_costs_parts = SpendingPlanPart.query.filter_by(user=user, category='Fixed Costs').order_by('id').all()
     savings_parts = SpendingPlanPart.query.filter_by(user=user, category='Savings').order_by('id').all()
     investments_parts = SpendingPlanPart.query.filter_by(user=user, category='Investments').order_by('id').all()
 
-    # TODO consider making this a list comprehension
     historical_spending = []
     for category in [fixed_costs_parts, savings_parts, investments_parts]:
         for part in category:
-            # TODO make this into a method on the spending plan part
-            actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
-            label = part.label
-            actual_amount = actual_amount_cents / 100 if actual_amount_cents else 0
-            expected_amount = part.expected_amount / 100
-            difference = round(abs(expected_amount - actual_amount), 2)
-            row = {
-                    'label': label,
-                    'actualAmount': round(actual_amount, 2),
-                    'expectedAmount': expected_amount,
-                    'difference': difference
-            }
+            row = part.compute_historical_spending(month_name)
             historical_spending.append(row)
 
-    part = discretionary_spending_part
-    # TODO make this into a method on the spending plan part
-    actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
-    label = part.label
-    actual_amount = actual_amount_cents / 100
-    expected_amount = part.expected_amount / 100
-    difference = round(abs(expected_amount - actual_amount), 2)
-    row = {
-        'label': label,
-        'actualAmount': round(actual_amount, 2),
-        'expectedAmount': expected_amount,
-        'difference': difference
-    }
+    row = discretionary_spending_part
     historical_spending.append(row)
 
     return { 'historticalSpending': historical_spending }, 200
