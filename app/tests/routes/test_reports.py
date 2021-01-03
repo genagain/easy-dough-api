@@ -62,7 +62,7 @@ def test_generate_report(client, login_test_user):
             category = 'Discretionary Spending',
             label = 'Spending Money',
             search_term = '*',
-            expected_amount = 100,
+            expected_amount = 10000,
             user=user
             )
 
@@ -70,7 +70,7 @@ def test_generate_report(client, login_test_user):
             category = 'Fixed Costs',
             label = 'Groceries',
             search_term = 'Grocery Store',
-            expected_amount = 200,
+            expected_amount = 20000,
             user=user
             )
 

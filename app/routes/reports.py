@@ -35,9 +35,11 @@ def generate():
     savings_parts = SpendingPlanPart.query.filter_by(user=user, category='Savings').order_by('id').all()
     investments_parts = SpendingPlanPart.query.filter_by(user=user, category='Investments').order_by('id').all()
 
+    # TODO consider making this a list comprehension
     historical_spending = []
     for category in [fixed_costs_parts, savings_parts, investments_parts]:
         for part in category:
+            # TODO make this into a method on the spending plan part
             actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
             label = part.label
             actual_amount = actual_amount_cents / 100 if actual_amount_cents else 0
@@ -52,6 +54,7 @@ def generate():
             historical_spending.append(row)
 
     part = discretionary_spending_part
+    # TODO make this into a method on the spending plan part
     actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == part).first()[0]
     label = part.label
     actual_amount = actual_amount_cents / 100
