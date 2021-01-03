@@ -26,12 +26,7 @@ def transactions():
     if not (start_date and end_date):
         return { 'message': 'start_date and end_date query parameters not found. Please provide both a start date and end date' }, 200
 
-    account_ids = []
-
-    for bank in user.banks:
-        accounts = bank.accounts
-        for account in accounts:
-            account_ids.append(account.id)
+    account_ids = [ account.id for bank in user.banks for account in bank.accounts ]
 
     search_term = request.args.get('search_term')
     if not search_term:
