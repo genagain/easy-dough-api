@@ -726,3 +726,58 @@ def test_unique_spending_plan_part(context):
     db.session.add(spending_plan_part1)
     with pytest.raises(IntegrityError) as error:
         db.session.commit()
+
+def test_spending_plan_part_historical_spending(context):
+    user = User(
+            firstname='John',
+            lastname='Test',
+            email='john@test.com',
+            password='password'
+            )
+    db.session.add(user)
+    db.session.commit()
+
+    discretionary_spending = SpendingPlanPart(
+	category = 'Discretionary Spending',
+	label = 'Spending Money',
+	search_term = '*',
+	expected_amount = 10000,
+	user=user
+    )
+
+    bank = Bank(
+	name='Ally Bank',
+	access_token='fake access token',
+	logo='fake logo',
+	user=user
+    )
+    account = Account(
+	plaid_account_id='fake account id',
+	name='Checking Account',
+	type='checking',
+	bank=bank
+    )
+    db.session.add(bank)
+    db.session.add(account)
+    db.session.commit()
+
+    may_transaction = Transaction(date='2020-05-15', description='Mexican place', amount=1500, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_one = Transaction(date='2020-06-15', description='Italian restaurant', amount=2950, account=account, spending_plan_part=discretionary_spending)
+    june_transaction_two = Transaction(date='2020-06-26', description='Japanese restaurant', amount=3500, account=account, spending_plan_part=discretionary_spending)
+    july_transaction = Transaction(date='2020-07-04', description='BBQ', amount=4000, account=account, spending_plan_part=discretionary_spending)
+
+    db.session.add(may_transaction)
+    db.session.add(june_transaction_one)
+    db.session.add(june_transaction_two)
+    db.session.add(july_transaction)
+    db.session.commit()
+
+    expected_historical_spending_part = {
+            'label': "Spending Money",
+            'actualAmount': 64.5,
+            'expectedAmount': 100,
+            'difference': 35.5
+            }
+    historical_spending_part = discretionary_spending.compute_historical_spending('June')
+    assert historical_spending_part == expected_historical_spending_part
+

@@ -1,5 +1,7 @@
+from datetime import datetime
 import re
 from flask_bcrypt import generate_password_hash
+from sqlalchemy import extract, func
 from sqlalchemy.orm import relationship, validates
 from app import db
 
@@ -123,3 +125,18 @@ class SpendingPlanPart(db.Model):
             formatted_dollar_amount = dollar_amount
 
         return { 'id': self.id, 'label': self.label, 'searchTerm': self.search_term, 'expectedAmount': formatted_dollar_amount}
+
+    def compute_historical_spending(self, month_name):
+        month_date = datetime.strptime(month_name, "%B")
+        actual_amount_cents = Transaction.query.with_entities(func.sum(Transaction.amount).label("actual_amount")).filter(extract('month', Transaction.date) == month_date.month, Transaction.spending_plan_part == self).first()[0]
+        label = self.label
+        actual_amount = actual_amount_cents / 100 if actual_amount_cents else 0
+        expected_amount = self.expected_amount / 100
+        difference = round(abs(expected_amount - actual_amount), 2)
+        row = {
+        'label': label,
+        'actualAmount': round(actual_amount, 2),
+        'expectedAmount': expected_amount,
+        'difference': difference
+        }
+        return row
