@@ -40,7 +40,7 @@ def generate():
             row = part.compute_historical_spending(month_name)
             historical_spending.append(row)
 
-    row = discretionary_spending_part
+    row = discretionary_spending_part.compute_historical_spending(month_name)
     historical_spending.append(row)
 
     return { 'historticalSpending': historical_spending }, 200
