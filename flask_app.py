@@ -70,7 +70,7 @@ def print_transactions():
             end_date = '2020-12-15'
             user.categorize_transactions(start_date, end_date)
 
-
+print_transactions()
 scheduler.add_job(add_user, 'cron', hour=1)
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
