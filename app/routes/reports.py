@@ -17,7 +17,7 @@ def months():
 
     account_ids = [ account.id for bank in user.banks for account in bank.accounts ]
 
-    transactions_unique_months = db.session.query(Transaction).distinct(extract('month', Transaction.date)).all()
+    transactions_unique_months = db.session.query(Transaction).filter(Transaction.account_id.in_(account_ids)).distinct(extract('month', Transaction.date)).all()
     months = list(map(lambda t: t.date.strftime("%B"), transactions_unique_months))
     return { 'months': months }, 200
 
