@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import random
 import string
 
-from flask_bcrypt import generate_password_hash
 from sqlalchemy.exc import IntegrityError
 from plaid import Client
 
@@ -13,27 +12,11 @@ from app.models import User, Bank, Transaction, SpendingPlanPart
 
 app = create_app()
 
-def add_user():
-    print('Tick! The time is: %s' % datetime.now())
-    with app.app_context():
-        hashed_password = generate_password_hash('test_password').decode('utf-8')
-        letters = string.ascii_lowercase
-        result_str = ''.join(random.choice(letters) for i in range(5))
-        user = User(
-                firstname='Random',
-                lastname='Test',
-                email=f"{result_str}@test.com",
-                password=hashed_password
-                )
-        db.session.add(user)
-        db.session.commit()
-
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
     with app.app_context():
         banks = Bank.query.all()
         for bank in banks:
-            # TODO create accounts by id dict
             accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
             access_token = bank.access_token
             start_date = '2020-07-15'
@@ -71,6 +54,5 @@ def print_transactions():
             user.categorize_transactions(start_date, end_date)
 
 print_transactions()
-scheduler.add_job(add_user, 'cron', hour=1)
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
