@@ -49,8 +49,8 @@ def print_transactions():
 
         users = User.query.all()
         for user in users:
-            start_date = '2020-07-15'
-            end_date = '2020-12-15'
+            start_date = '2021-01-01'
+            end_date = '2021-01-13'
             user.categorize_transactions(start_date, end_date)
 
 scheduler.add_job(print_transactions, 'cron', hour=2)
