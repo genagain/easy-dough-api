@@ -14,16 +14,13 @@ app = create_app()
 
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
+    start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
+    end_date = '{:%Y-%m-%d}'.format(datetime.now())
     with app.app_context():
         banks = Bank.query.all()
         for bank in banks:
             accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
             access_token = bank.access_token
-            start_date = '2021-01-14'
-            end_date = '2021-01-14'
-            # TODO change this to a day's worth of transactions once I have live data
-            # start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-30))
-            # end_date = '{:%Y-%m-%d}'.format(datetime.now())
             transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
             transactions_data = transactions_response['transactions']
             user = bank.user
@@ -49,10 +46,7 @@ def print_transactions():
 
         users = User.query.all()
         for user in users:
-            start_date = '2021-01-14'
-            end_date = '2021-01-14'
             user.categorize_transactions(start_date, end_date)
 
-print_transactions()
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
