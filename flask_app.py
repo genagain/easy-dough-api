@@ -14,14 +14,13 @@ app = create_app()
 
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
-    start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
-    end_date = '{:%Y-%m-%d}'.format(datetime.now())
+    yesterday = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
     with app.app_context():
         banks = Bank.query.all()
         for bank in banks:
             accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
             access_token = bank.access_token
-            transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
+            transactions_response = plaid_client.Transactions.get(access_token, yesterday, yesterday)
             transactions_data = transactions_response['transactions']
             user = bank.user
             discretionary_spending = SpendingPlanPart.query.filter_by(category="Discretionary Spending", user=user).first()
@@ -46,7 +45,7 @@ def print_transactions():
 
         users = User.query.all()
         for user in users:
-            user.categorize_transactions(start_date, end_date)
+            user.categorize_transactions(yesterday, yesterday)
 
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
