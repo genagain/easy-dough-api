@@ -18,7 +18,7 @@ def print_transactions():
     # start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-2))
     # end_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
     start_date = '2021-01-01'
-    end_date = '2021-01-22'
+    end_date = '2021-01-23'
     with app.app_context():
         banks = Bank.query.all()
         for bank in banks:
