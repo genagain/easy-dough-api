@@ -14,10 +14,8 @@ app = create_app()
 
 def print_transactions():
     print('Tick! The time is: %s' % datetime.now())
-    # start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-8))
-    # end_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
-    start_date = '2021-01-01'
-    end_date = '2021-01-23'
+    start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-8))
+    end_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
     with app.app_context():
         banks = Bank.query.all()
         for bank in banks:
@@ -52,6 +50,5 @@ def print_transactions():
         for user in users:
             user.categorize_transactions(start_date, end_date)
 
-print_transactions()
 scheduler.add_job(print_transactions, 'cron', hour=2)
 scheduler.start()
