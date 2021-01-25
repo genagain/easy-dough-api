@@ -12,7 +12,7 @@ from app.models import User, Bank, Transaction, SpendingPlanPart
 
 app = create_app()
 
-def print_transactions():
+def ingest_transactions():
     print('Tick! The time is: %s' % datetime.now())
     start_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-8))
     end_date = '{:%Y-%m-%d}'.format(datetime.now() + timedelta(-1))
@@ -50,5 +50,5 @@ def print_transactions():
         for user in users:
             user.categorize_transactions(start_date, end_date)
 
-scheduler.add_job(print_transactions, 'cron', hour=2)
+scheduler.add_job(ingest_transactions, 'cron', hour=2)
 scheduler.start()
