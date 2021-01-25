@@ -50,5 +50,5 @@ def ingest_transactions():
         for user in users:
             user.categorize_transactions(start_date, end_date)
 
-scheduler.add_job(ingest_transactions, 'cron', hour=2)
+scheduler.add_job(ingest_transactions, 'cron', hour=3)
 scheduler.start()
