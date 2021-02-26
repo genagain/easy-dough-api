@@ -54,14 +54,24 @@ pytest
 ## Technologies
 
 This project uses the following technologies
-[Flask](backen://flask.palletsprojects.com/en/1.1.x/)
+[Flask](https://flask.palletsprojects.com/en/1.1.x/)
+
 [SQLAlchemy](https://www.sqlalchemy.org/)
+
 [Alembic](https://alembic.sqlalchemy.org/en/latest/)
+
 [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)
+
 [Flask-Bcrypt](https://flask-bcrypt.readthedocs.io/en/latest/)
+
 [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/en/stable/)
+
 [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/)
+
 [Plaid](https://plaid.com/)
+
 [Advanced Python Scheduler](https://apscheduler.readthedocs.io/en/stable/)
+
 [Postgres](https://www.postgresql.org/)
+
 [pytest](https://docs.pytest.org/en/stable/)
