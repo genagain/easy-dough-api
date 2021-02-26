@@ -54,6 +54,7 @@ pytest
 ## Technologies
 
 This project uses the following technologies
+
 [Flask](https://flask.palletsprojects.com/en/1.1.x/)
 
 [SQLAlchemy](https://www.sqlalchemy.org/)
