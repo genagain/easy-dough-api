@@ -21,6 +21,8 @@ def ingest_transactions():
         users = User.query.filter(User.email.notlike('john@test.com')).all()
         for user in users:
             banks = user.banks
+            discretionary_spending = SpendingPlanPart.query.filter_by(category="Discretionary Spending", user=user).first()
+
             for bank in banks:
                 accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
                 access_token = bank.access_token
