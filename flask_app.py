@@ -27,8 +27,10 @@ def ingest_transactions():
             for bank in banks:
                 accounts_by_id = dict(list(map(lambda account: [account.plaid_account_id, account], bank.accounts)))
                 access_token = bank.access_token
+                transactions_data = []
                 try:
                     transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
+                    transactions_data = transactions_response['transactions']
                 except Exception as e:
                     print(e)
                     logging.error('Error at %s', 'Plaid', exc_info=e)
