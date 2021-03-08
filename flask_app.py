@@ -20,7 +20,6 @@ def ingest_transactions():
     with app.app_context():
         users = User.query.filter(User.email.notlike('john@test.com')).all()
         for user in users:
-            print(user.email)
             banks = user.banks
             discretionary_spending = SpendingPlanPart.query.filter_by(category="Discretionary Spending", user=user).first()
 
@@ -32,7 +31,6 @@ def ingest_transactions():
                     transactions_response = plaid_client.Transactions.get(access_token, start_date, end_date)
                     transactions_data = transactions_response['transactions']
                 except Exception as e:
-                    print(e)
                     logging.error('Error at %s', 'Plaid', exc_info=e)
                     continue
 
@@ -58,6 +56,5 @@ def ingest_transactions():
                             db.session.rollback()
             user.categorize_transactions(start_date, end_date)
 
-ingest_transactions()
 scheduler.add_job(ingest_transactions, 'cron', hour=23, timezone='America/Los_Angeles')
 scheduler.start()
