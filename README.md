@@ -1,6 +1,6 @@
 # Easy Dough API
 
-Easy Dough is a personal finance app that enables user to manage their personal finances easily.
+Easy Dough is a personal finance app that enables users to manage their personal finances easily.
 
 The frontend for this application is [here](https://github.com/genagain/easy-dough-client)
 
